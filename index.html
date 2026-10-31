@@ -70,27 +70,41 @@ main{padding:0 16px calc(100px + env(safe-area-inset-bottom))}
 .iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--muted);display:grid;place-items:center;cursor:pointer;flex:none}
 .iconbtn svg{width:20px;height:20px}
 
-.side{display:none}
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;padding:6px 6px max(8px,env(safe-area-inset-bottom))}
-.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;padding:4px 8px;min-width:60px}
-.tab.on{color:var(--acc)}
-.tab svg{width:22px;height:22px}
-.plus{width:52px;height:52px;border-radius:18px;border:0;background:var(--acc);color:var(--on);display:grid;place-items:center;margin-top:-26px;box-shadow:var(--shadow);cursor:pointer}
-.plus svg{width:26px;height:26px}
+/* ---------- Side menu: slide-in on phones, fixed sidebar on PC ---------- */
+.side{display:flex;flex-direction:column;gap:2px;background:var(--card)}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:17px;padding:0 8px 16px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.brand .sm{font-weight:500;font-size:12.5px}
+.brand i{width:40px;height:40px;border-radius:12px;background:var(--acc);color:var(--on);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:14px;flex:none}
+.nav{border:0;background:none;display:flex;align-items:center;gap:13px;padding:11px 12px;border-radius:12px;font-weight:600;font-size:15px;color:var(--muted);cursor:pointer;text-align:left;width:100%;margin:0}
+.nav svg{width:20px;height:20px;flex:none}
+.nav:hover{background:var(--soft)}
+.nav.on{background:var(--soft);color:var(--text)}
+.nav.on svg{color:var(--acc)}
+.navr{margin-left:auto;font-size:12.5px;color:var(--muted);font-weight:600}
+.badge{margin-left:auto;font-size:11.5px;font-weight:700;background:var(--outbg);color:var(--out);padding:2px 9px;border-radius:99px}
+.hr{height:1px;background:var(--line);margin:8px 6px}
+.mini{margin-left:auto;width:42px;height:24px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.mini::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+#darkSw:checked+.mini{background:var(--acc)}
+#darkSw:checked+.mini::after{transform:translateX(18px)}
+.sidefoot{margin-top:auto;padding:16px 12px 0;font-size:12px;color:var(--muted)}
+.fab{position:fixed;right:18px;bottom:max(22px,calc(env(safe-area-inset-bottom) + 12px));width:60px;height:60px;border-radius:20px;border:0;background:var(--acc);color:var(--on);display:grid;place-items:center;box-shadow:var(--shadow);cursor:pointer;z-index:6}
+.fab svg{width:28px;height:28px}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.open{opacity:1;pointer-events:auto}
 
+@media (max-width:899px){
+  .side{position:fixed;top:0;bottom:0;left:0;width:min(300px,84vw);z-index:21;padding:max(24px,env(safe-area-inset-top)) 14px max(18px,env(safe-area-inset-bottom));transform:translateX(-105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);box-shadow:8px 0 28px rgba(0,0,0,.28);overflow-y:auto}
+  .side.open{transform:none}
+  .side .addbtn{display:none}
+}
 @media (min-width:900px){
-  .tabs{display:none}
-  .app{max-width:none;display:grid;grid-template-columns:250px 1fr;min-height:100vh}
-  .side{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;padding:24px 16px;background:var(--card);border-right:1px solid var(--line)}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;padding:0 10px 22px}
-  .brand i{width:34px;height:34px;border-radius:10px;background:var(--acc);color:var(--on);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:14px}
-  .nav{border:0;background:none;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-weight:600;color:var(--muted);cursor:pointer;text-align:left}
-  .nav svg{width:20px;height:20px}
-  .nav:hover{background:var(--soft)}
-  .nav.on{background:var(--soft);color:var(--text)}
-  .side .btn{margin-top:auto}
+  .app{max-width:none;display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+  .side{position:sticky;top:0;height:100vh;padding:24px 16px;border-right:1px solid var(--line);overflow-y:auto}
+  .side .addbtn{margin-top:auto}
+  .sidefoot{margin-top:10px}
+  .menubtn,.fab,.scrim{display:none!important}
   main{padding:8px 40px 60px;max-width:820px;width:100%}
-  .top .back{display:none}
 }
 
 /* ---------- Building blocks ---------- */
@@ -166,7 +180,9 @@ label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:1
 .legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted);margin-top:6px;justify-content:center}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .svgchart{width:100%;height:auto}
-.rtabs{margin-bottom:14px}
+.flow{display:flex;gap:4px;height:10px;border-radius:99px;overflow:hidden;margin:12px 0 8px}
+.flow b{display:block;border-radius:99px;min-width:6px}
+.allgood{display:flex;align-items:center;gap:12px;padding:14px 16px;font-size:14px}
 
 /* categories */
 .chips{display:flex;flex-wrap:wrap;gap:8px;max-height:168px;overflow:auto;padding:2px}
@@ -195,10 +211,6 @@ label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:1
 .colors input{display:none}
 .colors label{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:0}
 .colors input:checked+label{border-color:var(--text);box-shadow:inset 0 0 0 3px var(--card)}
-.linkrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;font-weight:600}
-.linkrow:last-child{border-bottom:0}
-.linkrow .chev{margin-left:auto;color:var(--muted)}
-.linkrow svg{width:20px;height:20px}
 
 dialog{border:0;border-radius:22px;padding:20px;width:min(480px,calc(100% - 24px));max-height:calc(100% - 24px);background:var(--card);color:var(--text)}
 dialog::backdrop{background:rgba(0,0,0,.5)}
@@ -230,20 +242,25 @@ dialog .seg{margin-top:14px}
 </div>
 
 <div class="app">
-  <aside class="side">
-    <div class="brand"><i>Rs</i>My Accounts</div>
-    <button class="nav" data-page="home"><span data-icon="home"></span>Home</button>
-    <button class="nav" data-page="accounts"><span data-icon="wallet"></span>Accounts</button>
+  <aside class="side" id="side">
+    <div class="brand"><i>Rs</i><div><div>My Accounts</div><div class="sm" id="sideGreet"></div></div></div>
+    <button class="nav" data-page="home"><span data-icon="home"></span>Dashboard</button>
+    <button class="nav" data-page="accounts"><span data-icon="wallet"></span>Accounts<span class="navr" id="navAccN"></span></button>
     <button class="nav" data-page="activity"><span data-icon="list"></span>Activity</button>
-    <button class="nav" data-page="reports"><span data-icon="chart"></span>Reports &amp; budgets</button>
+    <button class="nav" data-page="reports"><span data-icon="chart"></span>Reports</button>
+    <button class="nav" data-page="budgets"><span data-icon="target"></span>Budgets<span class="badge" id="navBud" hidden></span></button>
     <button class="nav" data-page="categories"><span data-icon="tag"></span>Categories</button>
+    <div class="hr"></div>
+    <button class="nav" data-page="backup"><span data-icon="save"></span>Backup<span class="navr" id="navBk"></span></button>
+    <label class="nav"><span data-icon="moon"></span>Dark mode<input type="checkbox" id="darkSw" hidden><i class="mini"></i></label>
     <button class="nav" data-page="settings"><span data-icon="gear"></span>Settings</button>
-    <button class="btn primary" data-act="add">+ Add transaction</button>
+    <button class="btn primary addbtn" data-act="add">+ Add transaction</button>
+    <div class="sidefoot">Version <span id="sideVer"></span> · Offline · Private</div>
   </aside>
 
   <main>
     <div class="top">
-      <button class="iconbtn back" id="backBtn" data-act="back" aria-label="Back" hidden><span data-icon="back"></span></button>
+      <button class="iconbtn menubtn" data-act="menu" aria-label="Open menu"><span data-icon="menu"></span></button>
       <div class="grow"><div class="sm" id="greet"></div><h1 id="title">My Accounts</h1></div>
       <button class="iconbtn" id="topEye" data-act="eye" aria-label="Show or hide balances"></button>
     </div>
@@ -260,26 +277,24 @@ dialog .seg{margin-top:14px}
       <div id="txnList"></div>
     </section>
 
-    <section id="pg-reports" hidden>
-      <div class="seg rtabs">
-        <input type="radio" name="rtab" id="rtO" value="overview" checked><label for="rtO">Overview</label>
-        <input type="radio" name="rtab" id="rtB" value="budgets"><label for="rtB">Budgets</label>
+    <section id="pg-reports" hidden></section>
+    <section id="pg-budgets" hidden></section>
+
+    <section id="pg-backup" hidden>
+      <div class="card pad set">
+        <h3>Backup</h3>
+        <p>Your data is stored only on this device. Export a backup file regularly and keep it somewhere safe, like your Google Drive. Use it to restore your data or copy it to another device.</p>
+        <p id="lastBackup" style="color:var(--text);font-weight:600"></p>
+        <button class="btn primary" data-act="export">Export backup file</button>
+        <div style="height:8px"></div>
+        <button class="btn" id="importBtn">Import backup file</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
       </div>
-      <div class="mnav">
-        <button class="iconbtn" data-act="mprev" aria-label="Previous month"><span data-icon="left"></span></button>
-        <b id="mLabel"></b>
-        <button class="iconbtn" data-act="mnext" id="mNext" aria-label="Next month"><span data-icon="right"></span></button>
-      </div>
-      <div id="repBody"></div>
     </section>
 
     <section id="pg-categories" hidden></section>
 
     <section id="pg-settings" hidden>
-      <div class="card list set">
-        <div class="linkrow" data-page="accounts"><span data-icon="wallet"></span>Accounts<span class="chev">›</span></div>
-        <div class="linkrow" data-page="categories"><span data-icon="tag"></span>Categories &amp; budgets<span class="chev">›</span></div>
-      </div>
       <div class="card pad set">
         <h3>Appearance</h3>
         <p>Light uses Graphite Mono, dark uses Plum Night.</p>
@@ -304,14 +319,6 @@ dialog .seg{margin-top:14px}
         <input type="text" id="userName" maxlength="30" placeholder="e.g. Haqeeq" autocomplete="off">
       </div>
       <div class="card pad set">
-        <h3>Backup</h3>
-        <p>Your data is stored only on this device. Export a backup file regularly, and use it to copy your data to another device. <span id="lastBackup"></span></p>
-        <button class="btn primary" data-act="export">Export backup file</button>
-        <div style="height:8px"></div>
-        <button class="btn" id="importBtn">Import backup file</button>
-        <input type="file" id="importFile" accept=".json,application/json" hidden>
-      </div>
-      <div class="card pad set">
         <h3>Storage</h3>
         <p id="storageNote" style="margin:0">Checking…</p>
       </div>
@@ -323,13 +330,8 @@ dialog .seg{margin-top:14px}
   </main>
 </div>
 
-<nav class="tabs">
-  <button class="tab" data-page="home"><span data-icon="home"></span>Home</button>
-  <button class="tab" data-page="activity"><span data-icon="list"></span>Activity</button>
-  <button class="plus" data-act="add" aria-label="Add transaction"><span data-icon="plus"></span></button>
-  <button class="tab" data-page="reports"><span data-icon="chart"></span>Reports</button>
-  <button class="tab" data-page="settings"><span data-icon="gear"></span>Settings</button>
-</nav>
+<div class="scrim" id="scrim" data-act="closeMenu"></div>
+<button class="fab" id="fab" data-act="add" aria-label="Add transaction"><span data-icon="plus"></span></button>
 
 <dialog id="dlgTxn">
   <form novalidate onsubmit="return false">
@@ -427,7 +429,7 @@ dialog .seg{margin-top:14px}
 </dialog>
 
 <script>
-const VERSION = '1.3.2';
+const VERSION = '1.4';
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 
 /* ---------- Icons ---------- */
@@ -440,6 +442,9 @@ const I = {
   tag: svg('<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>'),
   gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
   plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  menu: svg('<path d="M4 6h16M4 12h16M4 18h16"/>'),
+  target: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'),
+  moon: svg('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'),
   back: svg('<path d="M15 18l-6-6 6-6"/>'),
   left: svg('<path d="M15 18l-6-6 6-6"/>'),
   right: svg('<path d="M9 18l6-6-6-6"/>'),
@@ -484,8 +489,8 @@ function minor(v){   // "1250", "1,250.50", "Rs 1,250", "-300" → whole paisa/p
 const sym = cur => /[A-Za-z.]$/.test(cur) ? cur + ' ' : cur;   // "Rs 1,250.00" but "£1,250.00"
 const fmt = (m, cur) => (m < 0 ? '−' : '') + esc(sym(cur)) + (Math.abs(m) / 100).toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
 const fmt0 = (m, cur) => (m < 0 ? '−' : '') + esc(sym(cur)) + Math.round(Math.abs(m) / 100).toLocaleString('en-GB');
-const money = (m, cur) => hidden ? `<span class="hidden-val">${esc(sym(cur))}••••</span>` : fmt(m, cur);
-const money0 = (m, cur) => hidden ? `<span class="hidden-val">${esc(sym(cur))}••••</span>` : fmt0(m, cur);
+const money = (m, cur) => hidden ? `${esc(sym(cur))}<span class="hidden-val">••••</span>` : fmt(m, cur);
+const money0 = (m, cur) => hidden ? `${esc(sym(cur))}<span class="hidden-val">••••</span>` : fmt0(m, cur);
 const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
 const niceDate = d => new Date(d + 'T00:00').toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
 const shortDate = d => { const t = today(), y = new Date(Date.now() - 864e5); const ys = new Date(y - y.getTimezoneOffset()*60000).toISOString().slice(0,10);
@@ -570,32 +575,68 @@ function applyTheme(){
   const dark = cfg.theme === 'dark' || (cfg.theme === 'system' && darkMQ.matches);
   $('meta[name=theme-color]').content = dark ? '#140e1a' : '#f2f2f2';
 }
-darkMQ.addEventListener ? darkMQ.addEventListener('change', applyTheme) : darkMQ.addListener(applyTheme);
+const onSystemTheme = () => { applyTheme(); if (typeof updateSide === 'function') updateSide(); };
+darkMQ.addEventListener ? darkMQ.addEventListener('change', onSystemTheme) : darkMQ.addListener(onSystemTheme);
 
 /* ---------- Navigation ---------- */
-const PAGES = ['home','accounts','activity','reports','categories','settings'];
-const TITLES = { home: 'My Accounts', accounts: 'Accounts', activity: 'Activity', reports: 'Reports', categories: 'Categories & budgets', settings: 'Settings' };
-const SUBPAGES = { accounts: 'settings', categories: 'settings' };   // pages reached from Settings on the phone
-let page = 'home', prevPage = 'home', filter = '', catFilter = '', query = '', rMonth = thisMonth(), rTab = 'overview';
+const PAGES = ['home','accounts','activity','reports','budgets','categories','backup','settings'];
+const TITLES = { home: 'My Accounts', accounts: 'Accounts', activity: 'Activity', reports: 'Reports', budgets: 'Budgets', categories: 'Categories', backup: 'Backup', settings: 'Settings' };
+let page = 'home', filter = '', catFilter = '', query = '', rMonth = thisMonth();
 function go(p){
-  if (p !== page) prevPage = page;
   page = p;
-  const navOn = SUBPAGES[p] && matchMedia('(max-width:899px)').matches ? SUBPAGES[p] : p;
-  $$('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === p || (b.classList.contains('tab') && b.dataset.page === navOn)));
+  $$('.nav[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === p));
   PAGES.forEach(x => $('#pg-' + x).hidden = x !== p);
+  closeMenu();
   render(); window.scrollTo(0, 0);
 }
 
-function render(){
+/* side menu (slides in on phones; the phone's back button closes it) */
+const side = $('#side'), scrim = $('#scrim');
+const menuOpen = () => side.classList.contains('open');
+function openMenu(){
+  side.classList.add('open'); scrim.classList.add('open'); document.body.style.overflow = 'hidden';
+  try { history.pushState({ menu: 1 }, ''); } catch(e){}
+}
+function closeMenu(fromBack){
+  if (!menuOpen()) return;
+  side.classList.remove('open'); scrim.classList.remove('open'); document.body.style.overflow = '';
+  if (!fromBack && history.state && history.state.menu) try { history.back(); } catch(e){}
+}
+addEventListener('popstate', () => closeMenu(true));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+let touchX = null;   // swipe left to close
+side.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+side.addEventListener('touchend', e => { if (touchX !== null && e.changedTouches[0].clientX - touchX < -60) closeMenu(); touchX = null; });
+
+const isDark = () => cfg.theme === 'dark' || (cfg.theme === 'system' && darkMQ.matches);
+$('#darkSw').onchange = e => { cfg.theme = e.target.checked ? 'dark' : 'light'; saveCfg(); applyTheme(); render(); };
+
+function greeting(){
   const h = new Date().getHours();
   const g = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
-  $('#greet').textContent = page === 'home' ? (cfg.name ? `${g}, ${cfg.name}` : g) : '';
+  return cfg.name ? `${g}, ${cfg.name}` : g;
+}
+function updateSide(){
+  $('#sideGreet').textContent = greeting();
+  $('#navAccN').textContent = db.accounts.length || '';
+  const cur = repCur(), spent = spentByCat(thisMonth(), cur);
+  const over = db.cats.filter(c => c.type === 'out' && c.budget > 0 && (spent[c.id] || 0) > c.budget).length;
+  $('#navBud').hidden = !over; $('#navBud').textContent = `${over} over`;
+  $('#navBk').textContent = !cfg.lastBackup ? 'Never' : daysSince(cfg.lastBackup) === 0 ? 'Today' : `${daysSince(cfg.lastBackup)} days ago`;
+  $('#darkSw').checked = isDark();
+  $('#sideVer').textContent = VERSION;
+}
+
+function render(){
+  $('#greet').textContent = page === 'home' ? greeting() : '';
   $('#greet').hidden = page !== 'home';
   $('#title').textContent = TITLES[page];
-  $('#backBtn').hidden = !SUBPAGES[page];
   $('#topEye').innerHTML = hidden ? I.eyeoff : I.eye;
-  $('#topEye').hidden = page === 'settings' || (page === 'home' && db.accounts.length > 0);
-  ({ home: renderHome, accounts: renderAccounts, activity: renderActivity, reports: renderReports, categories: renderCategories, settings: renderSettings })[page]();
+  $('#topEye').hidden = ['settings', 'backup', 'categories'].includes(page) || (page === 'home' && db.accounts.length > 0);
+  $('#fab').hidden = ['settings', 'backup'].includes(page);
+  updateSide();
+  ({ home: renderHome, accounts: renderAccounts, activity: renderActivity, reports: renderReports, budgets: renderBudgets,
+     categories: renderCategories, backup: renderBackup, settings: renderSettings })[page]();
 }
 
 /* ---------- Rows ---------- */
@@ -647,7 +688,8 @@ function budgetRow(c, spent, cur){
     </div></div>`;
 }
 
-/* ---------- Home ---------- */
+/* ---------- Dashboard (Focus) ---------- */
+const backupDue = () => db.txns.length >= 5 && (!cfg.lastBackup || daysSince(cfg.lastBackup) >= 14);
 function renderHome(){
   const el = $('#pg-home');
   if (!db.accounts.length){
@@ -659,29 +701,38 @@ function renderHome(){
   const tot = totals(), main = repCur();
   const others = Object.keys(tot).filter(c => c !== main);
   const month = thisMonth();
+  const daysLeft = Number(monthEnd(month).slice(8)) - Number(today().slice(8));
   let inM = 0, outM = 0;
   db.txns.forEach(t => {
     if (t.date.slice(0, 7) !== month || !inCur(t, main)) return;
     if (t.type === 'in') inM += t.amount; if (t.type === 'out') outM += t.amount;
   });
-  const recent = [...db.txns].sort(byDate).reverse().slice(0, 5);
 
-  let backup = '';
-  if (db.txns.length >= 5 && (!cfg.lastBackup || daysSince(cfg.lastBackup) >= 14)){
-    backup = `<div class="banner">${I.save}<span>${cfg.lastBackup ? `Last backup ${daysSince(cfg.lastBackup)} days ago` : 'No backup yet'}</span><a data-act="export">Back up now</a></div>`;
-  }
+  // Needs attention: budgets over or close to their limit, and an overdue backup
+  const spent = spentByCat(month, main), items = [];
+  db.cats.filter(c => c.type === 'out' && c.budget > 0).map(c => ({ c, s: spent[c.id] || 0 }))
+    .sort((x, y) => y.s / y.c.budget - x.s / x.c.budget).forEach(({ c, s }) => {
+      const p = s / c.budget;
+      if (p > 1) items.push({ page: 'budgets', icon: esc(c.emoji), bg: 'var(--outbg)',
+        title: `${esc(c.name)} is ${money(s - c.budget, main)} over budget`, sub: `${money0(s, main)} of ${money0(c.budget, main)}` });
+      else if (p >= .75) items.push({ page: 'budgets', icon: esc(c.emoji), bg: tint('#f59e0b'),
+        title: `${esc(c.name)} at ${Math.round(p * 100)}%`, sub: `${money(c.budget - s, main)} left for ${daysLeft} day${daysLeft === 1 ? '' : 's'}` });
+    });
+  if (backupDue()) items.push({ page: 'backup', icon: I.save, bg: 'var(--soft)', title: 'Time for a backup',
+    sub: cfg.lastBackup ? `Last backup ${daysSince(cfg.lastBackup)} days ago` : "You haven't backed up yet" });
 
-  // the 3 budgets closest to (or over) their limit
-  const spent = spentByCat(month, main);
-  const budgets = db.cats.filter(c => c.type === 'out' && c.budget > 0)
-    .map(c => ({ c, s: spent[c.id] || 0 })).sort((a, b) => b.s / b.c.budget - a.s / a.c.budget).slice(0, 3);
+  const last = [...db.txns].sort((x, y) => y.ts - x.ts)[0];
+  const flow = inM || outM
+    ? `<div class="flow"><b style="flex:${inM};background:var(--in)"></b><b style="flex:${outM};background:var(--out)"></b></div>`
+    : `<div class="flow"><b style="flex:1;background:var(--line)"></b></div>`;
+  const net = inM - outM;
 
   el.innerHTML = `
     <div class="hero">
       <div class="k">Total balance</div>
       <div class="v">${money(tot[main] || 0, main)}</div>
       ${others.map(c => `<div class="o">+ ${money(tot[c], c)}</div>`).join('')}
-      <div class="s">${hidden ? 'Tap the eye to show' : `${monthName(month, {month: 'long'})}: ${inM ? '+' : ''}${fmt(inM, main)} in · ${outM ? '−' : ''}${fmt(outM, main)} out`}</div>
+      <div class="s">${hidden ? 'Tap the eye to show' : `${db.accounts.length} account${db.accounts.length === 1 ? '' : 's'}`}</div>
       <button class="eye" data-act="eye" aria-label="Show or hide balances">${hidden ? I.eyeoff : I.eye}</button>
     </div>
     <div class="qa">
@@ -689,13 +740,18 @@ function renderHome(){
       <button data-act="out"><b class="c-out">${I.out}</b>Expense</button>
       <button data-act="tr"><b class="c-tr">${I.tr}</b>Transfer</button>
     </div>
-    ${backup}
-    <div class="sec">Accounts <span class="links"><a data-act="addAcc">+ Add</a><a data-page="accounts">Manage</a></span></div>
-    <div class="card list">${db.accounts.map(a => accRow(a)).join('')}</div>
-    ${budgets.length ? `<div class="sec">Budgets this month <a data-act="budgets">See all</a></div>
-      <div class="card list">${budgets.map(b => budgetRow(b.c, b.s, main)).join('')}</div>` : ''}
-    <div class="sec">Recent <a data-page="activity">See all</a></div>
-    ${recent.length ? `<div class="card list">${recent.map(t => txRow(t)).join('')}</div>` : `<div class="card empty">No transactions yet. Tap Income or Expense to add one.</div>`}`;
+    <div class="card pad" style="margin-top:12px;cursor:pointer" data-page="reports">
+      <div class="between"><b>${monthName(month, {month: 'long'})} so far</b><span class="sm">${daysLeft} day${daysLeft === 1 ? '' : 's'} left</span></div>
+      ${flow}
+      <div class="between" style="font-size:14px;font-weight:700"><span class="in">In ${money(inM, main)}</span><span class="out">Out ${money(outM, main)}</span></div>
+      ${(inM || outM) && !hidden ? `<div class="sm" style="margin-top:4px">${net >= 0 ? `Saved ${fmt(net, main)} this month` : `Spent ${fmt(-net, main)} more than came in`}</div>` : ''}
+    </div>
+    ${items.length ? `<div class="sec">Needs attention</div>
+      <div class="card list">${items.map(x => `<div class="li" data-page="${x.page}"><div class="tic" style="background:${x.bg}">${x.icon}</div>
+        <div class="li-main"><div class="nm" style="white-space:normal">${x.title}</div><div class="sm">${x.sub}</div></div><span class="sm">›</span></div>`).join('')}</div>`
+      : `<div class="card allgood" style="margin-top:12px"><div class="tic c-in">${svg('<path d="M20 6 9 17l-5-5"/>')}</div><div><b>All good</b><div class="sm">No budgets over their limit.</div></div></div>`}
+    <div class="sec">Last added <a data-page="activity">See all</a></div>
+    ${last ? `<div class="card list">${txRow(last)}</div>` : `<div class="card empty">No transactions yet. Tap Income or Expense to add one.</div>`}`;
 }
 
 /* ---------- Accounts ---------- */
@@ -803,15 +859,16 @@ function lineSVG(vals, labels, sel, cur){
 }
 
 /* ---------- Reports & Budgets ---------- */
-function renderReports(){
-  $$('input[name=rtab]').forEach(r => r.checked = r.value === rTab);
-  $('#mLabel').textContent = monthName(rMonth);
-  $('#mNext').disabled = rMonth >= thisMonth();
-  const body = $('#repBody');
-  if (!db.accounts.length){ body.innerHTML = `<div class="card empty">Add an account and some transactions to see reports.</div>`; return; }
-  body.innerHTML = rTab === 'budgets' ? budgetsHTML() : overviewHTML();
+const mnav = () => `<div class="mnav">
+  <button class="iconbtn" data-act="mprev" aria-label="Previous month">${I.left}</button>
+  <b>${monthName(rMonth)}</b>
+  <button class="iconbtn" data-act="mnext" aria-label="Next month" ${rMonth >= thisMonth() ? 'disabled' : ''}>${I.right}</button></div>`;
+const noData = `<div class="card empty">Add an account and some transactions to see this page.</div>`;
+function renderReports(){ $('#pg-reports').innerHTML = mnav() + (db.accounts.length ? overviewHTML() : noData); }
+function renderBudgets(){ $('#pg-budgets').innerHTML = mnav() + (db.accounts.length ? budgetsHTML() : noData); }
+function renderBackup(){
+  $('#lastBackup').textContent = cfg.lastBackup ? `Last backup: ${niceDate(cfg.lastBackup)}` : 'No backup made yet';
 }
-$$('input[name=rtab]').forEach(r => r.onchange = () => { rTab = r.value; renderReports(); });
 
 function overviewHTML(){
   const cur = repCur(), month = rMonth;
@@ -920,7 +977,6 @@ function renderSettings(){
   $('#userName').value = cfg.name || '';
   $('#defCur').value = cfg.currency || 'Rs';
   $('#ver').textContent = VERSION;
-  $('#lastBackup').textContent = cfg.lastBackup ? `Last backup: ${niceDate(cfg.lastBackup)}.` : 'No backup made yet.';
   const n = $('#storageNote');
   const s = `${db.accounts.length} account${db.accounts.length === 1 ? '' : 's'}, ${db.txns.length} transaction${db.txns.length === 1 ? '' : 's'} and ${db.cats.length} categories stored on this device.`;
   n.textContent = s;
@@ -930,7 +986,7 @@ function renderSettings(){
     }).catch(() => {});
   }
 }
-$$('input[name=theme]').forEach(r => r.onchange = () => { cfg.theme = r.value; saveCfg(); applyTheme(); });
+$$('input[name=theme]').forEach(r => r.onchange = () => { cfg.theme = r.value; saveCfg(); applyTheme(); updateSide(); });
 $('#hideOnOpen').onchange = e => { cfg.hideOnOpen = e.target.checked; saveCfg(); };
 $('#userName').oninput = e => { cfg.name = e.target.value.trim(); saveCfg(); };
 $('#defCur').oninput = e => { cfg.currency = e.target.value.trim() || 'Rs'; saveCfg(); };
@@ -1181,10 +1237,10 @@ document.addEventListener('click', e => {
     case 'add': openTxn(); break;
     case 'in': case 'out': case 'tr': openTxn(null, d.act); break;
     case 'export': exportBackup(); break;
-    case 'budgets': rTab = 'budgets'; rMonth = thisMonth(); go('reports'); break;
-    case 'mprev': rMonth = addMonth(rMonth, -1); renderReports(); break;
-    case 'mnext': if (rMonth < thisMonth()){ rMonth = addMonth(rMonth, 1); renderReports(); } break;
-    case 'back': go(SUBPAGES[page] || prevPage); break;
+    case 'menu': openMenu(); break;
+    case 'closeMenu': closeMenu(); break;
+    case 'mprev': rMonth = addMonth(rMonth, -1); render(); break;
+    case 'mnext': if (rMonth < thisMonth()){ rMonth = addMonth(rMonth, 1); render(); } break;
   }
 });
 

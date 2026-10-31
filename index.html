@@ -14,6 +14,8 @@
   // Apply the saved theme before the page paints (avoids a flash of the wrong colours)
   try { var t = (JSON.parse(localStorage.getItem('my-accounts-settings')) || {}).theme;
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+  // The opening screen only shows when the app is launched, not when it is refreshed
+  try { if (sessionStorage.getItem('ma-session')) document.documentElement.classList.add('nosplash'); } catch (e) {}
 </script>
 <style>
 /* ---------- Themes: Graphite Mono (light) · Plum Night (dark) ---------- */
@@ -54,6 +56,7 @@ svg{display:block}
 /* ---------- Splash ---------- */
 #splash{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,var(--sp1),var(--sp2));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s ease}
 #splash.out{opacity:0;pointer-events:none}
+.nosplash #splash{display:none}
 #splash .logo{width:96px;height:96px;border-radius:28px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;font-size:40px;font-weight:800;color:var(--splogo);animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
 #splash .nm{font-size:30px;font-weight:800;letter-spacing:-.5px}
 #splash .tg{opacity:.75;font-size:15px}
@@ -429,7 +432,7 @@ dialog .seg{margin-top:14px}
 </dialog>
 
 <script>
-const VERSION = '1.4';
+const VERSION = '1.4.1';
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 
 /* ---------- Icons ---------- */
@@ -473,7 +476,9 @@ let cfg = Object.assign({ theme: 'system', hideOnOpen: true, name: '', lastBacku
   (() => { try { return JSON.parse(store.get(SKEY)) || {}; } catch(e){ return {}; } })());
 function save(){ store.set(KEY, JSON.stringify(db)); render(); }
 function saveCfg(){ store.set(SKEY, JSON.stringify(cfg)); }
-let hidden = !!cfg.hideOnOpen;
+const session = (() => { try { return JSON.parse(sessionStorage.getItem('ma-session')) || null; } catch(e){ return null; } })();
+let hidden = session ? !!session.hidden : !!cfg.hideOnOpen;   // a refresh keeps what you had; a fresh launch uses your setting
+const saveSession = () => { try { sessionStorage.setItem('ma-session', JSON.stringify({ page, hidden })); } catch(e){} };
 
 /* ---------- Helpers ---------- */
 const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#64748b'];
@@ -588,21 +593,37 @@ function go(p){
   PAGES.forEach(x => $('#pg-' + x).hidden = x !== p);
   closeMenu();
   render(); window.scrollTo(0, 0);
+  saveSession();
 }
 
-/* side menu (slides in on phones; the phone's back button closes it) */
+/* side menu (slides in on phones) */
 const side = $('#side'), scrim = $('#scrim');
 const menuOpen = () => side.classList.contains('open');
 function openMenu(){
   side.classList.add('open'); scrim.classList.add('open'); document.body.style.overflow = 'hidden';
-  try { history.pushState({ menu: 1 }, ''); } catch(e){}
 }
-function closeMenu(fromBack){
+function closeMenu(){
   if (!menuOpen()) return;
   side.classList.remove('open'); scrim.classList.remove('open'); document.body.style.overflow = '';
-  if (!fromBack && history.state && history.state.menu) try { history.back(); } catch(e){}
 }
-addEventListener('popstate', () => closeMenu(true));
+
+/* Back button / back gesture.
+   The app keeps one extra history step as a "guard", so a back press lands here instead of leaving:
+   open menu or form → close it · any page → Dashboard · Dashboard → press back again within 2 s to close */
+let lastBack = 0, leaving = false;
+const pushGuard = () => { try { history.pushState({ guard: 1 }, ''); } catch(e){} };
+function onBack(){
+  if (leaving){ history.back(); return; }   // keep stepping out until we've left the app
+  const openDlg = $$('dialog').reverse().find(d => d.open);
+  if (openDlg){ openDlg.close(); pushGuard(); return; }
+  if (menuOpen()){ closeMenu(); pushGuard(); return; }
+  if (page !== 'home'){ go('home'); pushGuard(); return; }
+  if (Date.now() - lastBack < 2000){ leaving = true; history.back(); return; }   // second press: leave the app
+  lastBack = Date.now();
+  toast('Press back again to close');
+  pushGuard();
+}
+addEventListener('popstate', onBack);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 let touchX = null;   // swipe left to close
 side.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
@@ -1231,7 +1252,7 @@ document.addEventListener('click', e => {
   if (d.acc){ filter = d.acc; catFilter = ''; query = ''; go('activity'); return; }
   if (d.tx){ openTxn(d.tx); return; }
   switch (d.act){
-    case 'eye': hidden = !hidden; render(); break;
+    case 'eye': hidden = !hidden; render(); saveSession(); break;
     case 'addAcc': openAcc(); break;
     case 'addCat': openCat(null, d.type); break;
     case 'add': openTxn(); break;
@@ -1246,11 +1267,19 @@ document.addEventListener('click', e => {
 
 /* ---------- Start ---------- */
 applyTheme();
-go('home');
+go(session && PAGES.includes(session.page) ? session.page : 'home');
+// Set up the back-button guard once; a refresh keeps the existing one instead of stacking more
+const hs = history.state || {};
+if (hs.guard){ /* already in place */ }
+else if (hs.root) pushGuard();
+else { try { history.replaceState({ root: 1 }, ''); } catch(e){} pushGuard(); }
 const splash = $('#splash');
-const hideSplash = () => { splash.classList.add('out'); setTimeout(() => splash.remove(), 450); };
-splash.onclick = hideSplash;
-setTimeout(hideSplash, 1200);
+if (session){ splash.remove(); }
+else {
+  const hideSplash = () => { splash.classList.add('out'); setTimeout(() => splash.remove(), 450); };
+  splash.onclick = hideSplash;
+  setTimeout(hideSplash, 1200);
+}
 
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch(e){}
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});

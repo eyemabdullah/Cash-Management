@@ -20,7 +20,7 @@
 :root{
   --bg:#f2f2f2;--card:#fff;--text:#111;--muted:#737373;--line:#e5e5e5;--soft:#f4f4f5;
   --acc:#111;--acc2:#3f3f46;--on:#fff;
-  --in:#16a34a;--out:#dc2626;--tr:#2563eb;--inbg:#dcfce7;--outbg:#fee2e2;--trbg:#dbeafe;
+  --in:#16a34a;--out:#dc2626;--tr:#2563eb;--warn:#f59e0b;--inbg:#dcfce7;--outbg:#fee2e2;--trbg:#dbeafe;
   --shadow:0 6px 16px rgba(0,0,0,.18);
   --sp1:#27272a;--sp2:#000;--splogo:#fff;
   color-scheme:light;
@@ -29,7 +29,7 @@
   :root:not([data-theme=light]){
     --bg:#140e1a;--card:#1f1627;--text:#f3e8f5;--muted:#a593ad;--line:#33253d;--soft:#2a1f33;
     --acc:#e879a6;--acc2:#a855f7;--on:#1a0b14;
-    --in:#5eead4;--out:#fb7185;--tr:#93c5fd;--inbg:#123b37;--outbg:#3b1621;--trbg:#1e2a4a;
+    --in:#5eead4;--out:#fb7185;--tr:#93c5fd;--warn:#fbbf24;--inbg:#123b37;--outbg:#3b1621;--trbg:#1e2a4a;
     --shadow:0 6px 18px rgba(0,0,0,.5);
     --sp1:#3a1d48;--sp2:#140e1a;--splogo:#e879a6;
     color-scheme:dark;
@@ -38,7 +38,7 @@
 :root[data-theme=dark]{
   --bg:#140e1a;--card:#1f1627;--text:#f3e8f5;--muted:#a593ad;--line:#33253d;--soft:#2a1f33;
   --acc:#e879a6;--acc2:#a855f7;--on:#1a0b14;
-  --in:#5eead4;--out:#fb7185;--tr:#93c5fd;--inbg:#123b37;--outbg:#3b1621;--trbg:#1e2a4a;
+  --in:#5eead4;--out:#fb7185;--tr:#93c5fd;--warn:#fbbf24;--inbg:#123b37;--outbg:#3b1621;--trbg:#1e2a4a;
   --shadow:0 6px 18px rgba(0,0,0,.5);
   --sp1:#3a1d48;--sp2:#140e1a;--splogo:#e879a6;
   color-scheme:dark;
@@ -63,10 +63,12 @@ svg{display:block}
 /* ---------- Layout ---------- */
 .app{max-width:720px;margin:0 auto}
 main{padding:0 16px calc(100px + env(safe-area-inset-bottom))}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:max(18px,env(safe-area-inset-top)) 2px 14px}
+.top{display:flex;align-items:center;gap:10px;padding:max(18px,env(safe-area-inset-top)) 2px 14px}
+.top .grow{flex:1;min-width:0}
 .top .sm{font-size:13px;color:var(--muted)}
 .top h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.3px}
 .iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--muted);display:grid;place-items:center;cursor:pointer;flex:none}
+.iconbtn svg{width:20px;height:20px}
 
 .side{display:none}
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;padding:6px 6px max(8px,env(safe-area-inset-bottom))}
@@ -88,6 +90,7 @@ main{padding:0 16px calc(100px + env(safe-area-inset-bottom))}
   .nav.on{background:var(--soft);color:var(--text)}
   .side .btn{margin-top:auto}
   main{padding:8px 40px 60px;max-width:820px;width:100%}
+  .top .back{display:none}
 }
 
 /* ---------- Building blocks ---------- */
@@ -99,14 +102,16 @@ main{padding:0 16px calc(100px + env(safe-area-inset-bottom))}
 .hero .o{font-size:14px;font-weight:700;opacity:.9;font-variant-numeric:tabular-nums}
 .hero .s{font-size:13px;opacity:.85;margin-top:8px}
 .hero .eye{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:inherit;display:grid;place-items:center;cursor:pointer}
+.hero .eye svg{width:20px;height:20px}
 .hidden-val{letter-spacing:2px}
 .qa{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
 .qa button{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:12px 4px;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}
-.qa b,.tic{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;flex:none}
+.qa b,.tic{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;flex:none;font-size:19px}
 .qa svg,.tic svg{width:18px;height:18px}
 .c-in{background:var(--inbg);color:var(--in)}.c-out{background:var(--outbg);color:var(--out)}.c-tr{background:var(--trbg);color:var(--tr)}
 .sec{display:flex;justify-content:space-between;align-items:baseline;margin:20px 4px 8px;font-weight:700;font-size:15px}
 .sec a{font-size:14px}
+.sec .links{display:flex;gap:14px}
 .list{padding:2px 14px}
 .li{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
 .li:last-child{border-bottom:0}
@@ -117,25 +122,60 @@ main{padding:0 16px calc(100px + env(safe-area-inset-bottom))}
 .amt{font-weight:700;font-size:15px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .amt .sm{font-weight:500}
 .in{color:var(--in)}.out{color:var(--out)}.tr{color:var(--tr)}
+.between{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .day{color:var(--muted);font-size:13px;font-weight:600;margin:18px 6px 6px}
-.empty{text-align:center;color:var(--muted);padding:36px 16px}
+.empty{text-align:center;color:var(--muted);padding:30px 16px}
 .welcome{text-align:center;padding:32px 20px;margin-top:8px}
 .welcome .wl{width:72px;height:72px;margin:0 auto 14px;border-radius:22px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:var(--on);display:grid;place-items:center;font-size:28px;font-weight:800}
 .welcome h2{margin:0 0 6px}
 .welcome p{color:var(--muted);margin:0 0 18px}
 .banner{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--soft);font-size:14px}
+.banner svg{width:18px;height:18px;flex:none}
 .banner a{margin-left:auto;white-space:nowrap}
 .editbtn{border:0;background:var(--soft);color:var(--muted);width:34px;height:34px;border-radius:10px;display:grid;place-items:center;cursor:pointer;flex:none}
 .editbtn svg{width:16px;height:16px}
-.filters{display:flex;gap:8px;margin-bottom:4px}
+.filters{display:flex;gap:8px;margin-bottom:8px}
 .filters>*{flex:1;min-width:0}
+.pbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.pbar b{display:block;height:100%;border-radius:99px;transition:width .4s}
 
 .btn{font-weight:600;border-radius:12px;padding:12px 16px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;width:100%}
 .btn.primary{background:var(--acc);border-color:var(--acc);color:var(--on)}
 .btn.danger{color:var(--out)}
-select,input[type=text],input[type=date],input:not([type]){font:inherit;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);outline:none}
+select,input[type=text],input[type=date]{font:inherit;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);outline:none}
 select:focus,input:focus{border-color:var(--acc)}
-label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 5px}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 6px}
+
+/* reports */
+.mnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mnav b{font-size:17px}
+.mnav .iconbtn:disabled{opacity:.35;cursor:default}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tiles .net{grid-column:1/-1}
+@media (min-width:520px){.tiles{grid-template-columns:repeat(3,1fr)}.tiles .net{grid-column:auto}}
+.tile{padding:12px 14px}
+.tile .k{font-size:12px;color:var(--muted);font-weight:600}
+.tile .v{font-size:17px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.chart{padding:16px;margin-top:12px}
+.chart h3{margin:0 0 4px;font-size:15px}
+.chart .sub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.donutwrap{position:relative;width:190px;height:190px;margin:4px auto 10px}
+.donutwrap svg{width:100%;height:100%}
+.donutwrap .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.donutwrap .c b{font-size:18px;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted);margin-top:6px;justify-content:center}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.svgchart{width:100%;height:auto}
+.rtabs{margin-bottom:14px}
+
+/* categories */
+.chips{display:flex;flex-wrap:wrap;gap:8px;max-height:168px;overflow:auto;padding:2px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:14px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.chip.on{background:var(--acc);border-color:var(--acc);color:var(--on)}
+.chip.new{border-style:dashed;color:var(--muted)}
+.emojis{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.emojis button{width:40px;height:40px;border-radius:11px;border:1px solid var(--line);background:var(--bg);font-size:20px;cursor:pointer;padding:0}
+.emojis button.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
 
 /* settings */
 .set{margin-bottom:12px}
@@ -155,6 +195,10 @@ label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:1
 .colors input{display:none}
 .colors label{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:0}
 .colors input:checked+label{border-color:var(--text);box-shadow:inset 0 0 0 3px var(--card)}
+.linkrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;font-weight:600}
+.linkrow:last-child{border-bottom:0}
+.linkrow .chev{margin-left:auto;color:var(--muted)}
+.linkrow svg{width:20px;height:20px}
 
 dialog{border:0;border-radius:22px;padding:20px;width:min(480px,calc(100% - 24px));max-height:calc(100% - 24px);background:var(--card);color:var(--text)}
 dialog::backdrop{background:rgba(0,0,0,.5)}
@@ -164,7 +208,7 @@ dialog .seg{margin-top:14px}
 .row>*{flex:1}
 .note{color:var(--muted);font-size:13px;margin:6px 0 0}
 .err{color:var(--out);font-size:14px;min-height:1.2em;margin-top:10px}
-.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:50;box-shadow:var(--shadow)}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:50;box-shadow:var(--shadow);white-space:nowrap}
 @media (min-width:900px){.toast{bottom:32px}}
 </style>
 </head>
@@ -183,29 +227,51 @@ dialog .seg{margin-top:14px}
     <button class="nav" data-page="home"><span data-icon="home"></span>Home</button>
     <button class="nav" data-page="accounts"><span data-icon="wallet"></span>Accounts</button>
     <button class="nav" data-page="activity"><span data-icon="list"></span>Activity</button>
+    <button class="nav" data-page="reports"><span data-icon="chart"></span>Reports &amp; budgets</button>
+    <button class="nav" data-page="categories"><span data-icon="tag"></span>Categories</button>
     <button class="nav" data-page="settings"><span data-icon="gear"></span>Settings</button>
     <button class="btn primary" data-act="add">+ Add transaction</button>
   </aside>
 
   <main>
     <div class="top">
-      <div><div class="sm" id="greet"></div><h1 id="title">My Accounts</h1></div>
+      <button class="iconbtn back" id="backBtn" data-act="back" aria-label="Back" hidden><span data-icon="back"></span></button>
+      <div class="grow"><div class="sm" id="greet"></div><h1 id="title">My Accounts</h1></div>
       <button class="iconbtn" id="topEye" data-act="eye" aria-label="Show or hide balances"></button>
     </div>
 
     <section id="pg-home"></section>
-
     <section id="pg-accounts" hidden></section>
 
     <section id="pg-activity" hidden>
+      <input type="text" id="search" placeholder="Search descriptions" autocomplete="off" style="margin-bottom:8px">
       <div class="filters">
-        <input type="text" id="search" placeholder="Search descriptions" autocomplete="off">
         <select id="filterAcc" aria-label="Filter by account"></select>
+        <select id="filterCat" aria-label="Filter by category"></select>
       </div>
       <div id="txnList"></div>
     </section>
 
+    <section id="pg-reports" hidden>
+      <div class="seg rtabs">
+        <input type="radio" name="rtab" id="rtO" value="overview" checked><label for="rtO">Overview</label>
+        <input type="radio" name="rtab" id="rtB" value="budgets"><label for="rtB">Budgets</label>
+      </div>
+      <div class="mnav">
+        <button class="iconbtn" data-act="mprev" aria-label="Previous month"><span data-icon="left"></span></button>
+        <b id="mLabel"></b>
+        <button class="iconbtn" data-act="mnext" id="mNext" aria-label="Next month"><span data-icon="right"></span></button>
+      </div>
+      <div id="repBody"></div>
+    </section>
+
+    <section id="pg-categories" hidden></section>
+
     <section id="pg-settings" hidden>
+      <div class="card list set">
+        <div class="linkrow" data-page="accounts"><span data-icon="wallet"></span>Accounts<span class="chev">›</span></div>
+        <div class="linkrow" data-page="categories"><span data-icon="tag"></span>Categories &amp; budgets<span class="chev">›</span></div>
+      </div>
       <div class="card pad set">
         <h3>Appearance</h3>
         <p>Light uses Graphite Mono, dark uses Plum Night.</p>
@@ -217,7 +283,7 @@ dialog .seg{margin-top:14px}
       </div>
       <div class="card pad set">
         <h3>Currency</h3>
-        <p>Used for new accounts. Changing it only changes the label, it doesn't convert any amounts.</p>
+        <p>Used for new accounts and for reports. Changing it only changes the label, it doesn't convert any amounts.</p>
         <div class="filters"><input type="text" id="defCur" maxlength="4" autocomplete="off"><button class="btn" id="applyCur" style="flex:1.4">Apply to all accounts</button></div>
       </div>
       <div class="card pad set">
@@ -251,19 +317,25 @@ dialog .seg{margin-top:14px}
 
 <nav class="tabs">
   <button class="tab" data-page="home"><span data-icon="home"></span>Home</button>
-  <button class="tab" data-page="accounts"><span data-icon="wallet"></span>Accounts</button>
-  <button class="plus" data-act="add" aria-label="Add transaction"><span data-icon="plus"></span></button>
   <button class="tab" data-page="activity"><span data-icon="list"></span>Activity</button>
+  <button class="plus" data-act="add" aria-label="Add transaction"><span data-icon="plus"></span></button>
+  <button class="tab" data-page="reports"><span data-icon="chart"></span>Reports</button>
   <button class="tab" data-page="settings"><span data-icon="gear"></span>Settings</button>
 </nav>
 
 <dialog id="dlgTxn">
-  <form id="formTxn" novalidate onsubmit="return false">
+  <form novalidate onsubmit="return false">
     <h2 id="txnTitle">New transaction</h2>
     <div class="seg">
       <input type="radio" name="type" id="tIn" value="in"><label for="tIn">Income</label>
       <input type="radio" name="type" id="tOut" value="out" checked><label for="tOut">Expense</label>
       <input type="radio" name="type" id="tTr" value="tr"><label for="tTr">Transfer</label>
+    </div>
+    <label class="f" for="fAmt">Amount</label>
+    <input id="fAmt" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+    <div id="catWrap">
+      <label class="f">Category</label>
+      <div class="chips" id="fCats"></div>
     </div>
     <label class="f" for="fAcc" id="lblAcc">Account</label>
     <select id="fAcc"></select>
@@ -271,10 +343,9 @@ dialog .seg{margin-top:14px}
       <label class="f" for="fTo">To account</label>
       <select id="fTo"></select>
     </div>
-    <label class="f" for="fAmt">Amount</label>
-    <input id="fAmt" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
     <label class="f" for="fDesc">Description</label>
-    <input id="fDesc" type="text" maxlength="120" placeholder="e.g. Salary, Groceries, Rent" autocomplete="off">
+    <input id="fDesc" type="text" maxlength="120" placeholder="e.g. Salary, Aldi, Shell" autocomplete="off" list="descList">
+    <datalist id="descList"></datalist>
     <label class="f" for="fDate">Date</label>
     <input id="fDate" type="date">
     <div class="err" id="txnErr"></div>
@@ -287,10 +358,10 @@ dialog .seg{margin-top:14px}
 </dialog>
 
 <dialog id="dlgAcc">
-  <form id="formAcc" novalidate onsubmit="return false">
+  <form novalidate onsubmit="return false">
     <h2 id="accTitle">New account</h2>
     <label class="f" for="aName">Account name</label>
-    <input id="aName" type="text" maxlength="40" placeholder="e.g. Monzo, Barclays, Cash" autocomplete="off">
+    <input id="aName" type="text" maxlength="40" placeholder="e.g. Meezan, HBL, Cash" autocomplete="off">
     <label class="f">Colour</label>
     <div class="colors" id="aColors"></div>
     <label class="f" for="aCur">Currency symbol</label>
@@ -307,8 +378,36 @@ dialog .seg{margin-top:14px}
   </form>
 </dialog>
 
+<dialog id="dlgCat">
+  <form novalidate onsubmit="return false">
+    <h2 id="catTitle">New category</h2>
+    <div class="seg">
+      <input type="radio" name="ctype" id="ctOut" value="out" checked><label for="ctOut">Expense</label>
+      <input type="radio" name="ctype" id="ctIn" value="in"><label for="ctIn">Income</label>
+    </div>
+    <label class="f" for="cName">Name</label>
+    <input id="cName" type="text" maxlength="30" placeholder="e.g. Groceries" autocomplete="off">
+    <label class="f" for="cEmoji">Icon</label>
+    <div class="emojis" id="cEmojis"></div>
+    <input id="cEmoji" type="text" maxlength="8" placeholder="Or type any emoji" autocomplete="off">
+    <label class="f">Colour</label>
+    <div class="colors" id="cColors"></div>
+    <div id="budgetWrap">
+      <label class="f" for="cBudget">Monthly budget (optional)</label>
+      <input id="cBudget" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 20,000">
+      <p class="note">Leave empty for no budget.</p>
+    </div>
+    <div class="err" id="catErr"></div>
+    <div class="row">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="button" class="btn primary" id="catSave">Save</button>
+    </div>
+    <button type="button" class="btn danger" id="catDel" style="margin-top:8px" hidden>Delete category</button>
+  </form>
+</dialog>
+
 <script>
-const VERSION = '1.2';
+const VERSION = '1.3';
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 
 /* ---------- Icons ---------- */
@@ -317,8 +416,13 @@ const I = {
   home: svg('<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'),
   wallet: svg('<rect x="3" y="6" width="18" height="14" rx="3"/><path d="M16 13h2M3 10h18"/>'),
   list: svg('<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>'),
+  chart: svg('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
+  tag: svg('<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>'),
   gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
   plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  back: svg('<path d="M15 18l-6-6 6-6"/>'),
+  left: svg('<path d="M15 18l-6-6 6-6"/>'),
+  right: svg('<path d="M9 18l6-6-6-6"/>'),
   eye: svg('<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'),
   eyeoff: svg('<path d="M17.9 17.9A10 10 0 0 1 12 20C5 20 1 12 1 12a18 18 0 0 1 5.1-5.9M9.9 4.2A9 9 0 0 1 12 4c7 0 11 8 11 8a18 18 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2M1 1l22 22"/>'),
   in: svg('<path d="M12 5v14M5 12l7 7 7-7"/>'),
@@ -330,7 +434,7 @@ const I = {
 $$('[data-icon]').forEach(el => el.outerHTML = I[el.dataset.icon]);
 
 /* ---------- Storage ---------- */
-const KEY = 'my-accounts-v1', SKEY = 'my-accounts-settings';   // same data key as v1.0, so existing data carries over
+const KEY = 'my-accounts-v1', SKEY = 'my-accounts-settings';   // same data key as earlier versions, so existing data carries over
 const mem = {};
 const store = {
   get(k){ try { return localStorage.getItem(k); } catch(e){ return mem[k] ?? null; } },
@@ -348,26 +452,38 @@ let hidden = !!cfg.hideOnOpen;
 
 /* ---------- Helpers ---------- */
 const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#64748b'];
+const CAT_COLORS = ['#22c55e','#f97316','#ef4444','#3b82f6','#8b5cf6','#eab308','#06b6d4','#ec4899','#14b8a6','#a855f7','#84cc16','#0ea5e9','#64748b'];
+const EMOJIS = ['🛒','🍔','☕','⛽','🚗','🚌','🏠','💡','📱','🛍️','👕','💊','👪','🤲','🕌','✈️','🎓','🎮','🎁','🐑','🔧','🧾','💼','💻','💰','📈','↩️','➕','📦'];
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function minor(v){   // "1250", "1,250.50", "£1,250", "-300" → whole pence, or NaN
+function minor(v){   // "1250", "1,250.50", "Rs 1,250", "-300" → whole paisa/pence, or NaN
   const s = String(v).replace(/[\s,£$€₨]/g, '').replace(/^Rs\.?/i, '').replace(/[−–]/g, '-');
   if (!/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
   return Math.round(parseFloat(s) * 100);
 }
 const sym = cur => /[A-Za-z.]$/.test(cur) ? cur + ' ' : cur;   // "Rs 1,250.00" but "£1,250.00"
 const fmt = (m, cur) => (m < 0 ? '−' : '') + esc(sym(cur)) + (Math.abs(m) / 100).toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
-const money = (m, cur) => hidden ? `<span class="hidden-val">${esc(cur)} ••••</span>` : fmt(m, cur);
+const fmt0 = (m, cur) => (m < 0 ? '−' : '') + esc(sym(cur)) + Math.round(Math.abs(m) / 100).toLocaleString('en-GB');
+const money = (m, cur) => hidden ? `<span class="hidden-val">${esc(sym(cur))}••••</span>` : fmt(m, cur);
+const money0 = (m, cur) => hidden ? `<span class="hidden-val">${esc(sym(cur))}••••</span>` : fmt0(m, cur);
 const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
 const niceDate = d => new Date(d + 'T00:00').toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
 const shortDate = d => { const t = today(), y = new Date(Date.now() - 864e5); const ys = new Date(y - y.getTimezoneOffset()*60000).toISOString().slice(0,10);
   return d === t ? 'Today' : d === ys ? 'Yesterday' : new Date(d + 'T00:00').toLocaleDateString('en-GB', {day:'numeric', month:'short'}); };
 const daysSince = d => Math.floor((new Date(today()) - new Date(d)) / 864e5);
 const accById = id => db.accounts.find(a => a.id === id);
+const catById = id => id ? db.cats.find(c => c.id === id) : null;
 const colorOf = a => a.color || COLORS[Math.max(0, db.accounts.indexOf(a)) % COLORS.length];
 const initial = a => (Array.from(a.name.trim())[0] || '?').toUpperCase();
 const byDate = (x, y) => x.date < y.date ? -1 : x.date > y.date ? 1 : x.ts - y.ts;
 const countFor = a => db.txns.filter(t => t.acc === a.id || t.to === a.id).length;
+const tint = c => c + '26';   // category colour at ~15% opacity
+
+/* months */
+const thisMonth = () => today().slice(0, 7);
+function addMonth(key, n){ const [y, m] = key.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
+function monthEnd(key){ const [y, m] = key.split('-').map(Number); return `${key}-${String(new Date(y, m, 0).getDate()).padStart(2, '0')}`; }
+const monthName = (key, opt = {month: 'long', year: 'numeric'}) => { const [y, m] = key.split('-').map(Number); return new Date(y, m - 1, 1).toLocaleDateString('en-GB', opt); };
 
 function effect(t, id){
   if (t.type === 'in'  && t.acc === id) return t.amount;
@@ -377,11 +493,29 @@ function effect(t, id){
 }
 const balance = a => db.txns.reduce((s, t) => s + effect(t, a.id), a.opening);
 function totals(){ const t = {}; db.accounts.forEach(a => t[a.cur] = (t[a.cur] || 0) + balance(a)); return t; }
+// Reports use one currency: the default one if any account uses it, otherwise the first account's
+const repCur = () => db.accounts.some(a => a.cur === cfg.currency) ? cfg.currency : (db.accounts[0] ? db.accounts[0].cur : cfg.currency);
+const inCur = (t, cur) => { const a = accById(t.acc); return a && a.cur === cur; };
 
 function toast(msg){
+  $$('.toast').forEach(t => t.remove());
   const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
 }
+
+/* ---------- Categories: defaults + upgrade of older data ---------- */
+const DEFAULT_CATS = [
+  ['out','Groceries','🛒'],['out','Eating out','🍔'],['out','Fuel','⛽'],['out','Car','🚗'],['out','Transport','🚌'],
+  ['out','Rent','🏠'],['out','Bills','💡'],['out','Phone & internet','📱'],['out','Shopping','🛍️'],['out','Health','💊'],
+  ['out','Family','👪'],['out','Charity','🤲'],['out','Travel','✈️'],['out','Other','📦'],
+  ['in','Salary','💼'],['in','Freelance','💻'],['in','Gift','🎁'],['in','Refund','↩️'],['in','Other income','➕']
+];
+function ensureCats(){
+  if (Array.isArray(db.cats)) return false;
+  db.cats = DEFAULT_CATS.map(([type, name, emoji], i) => ({ id: 'c' + i + uid(), type, name, emoji, color: CAT_COLORS[i % CAT_COLORS.length], budget: 0 }));
+  return true;
+}
+if (ensureCats()) store.set(KEY, JSON.stringify(db));
 
 /* ---------- Theme ---------- */
 const darkMQ = matchMedia('(prefers-color-scheme: dark)');
@@ -394,12 +528,16 @@ function applyTheme(){
 darkMQ.addEventListener ? darkMQ.addEventListener('change', applyTheme) : darkMQ.addListener(applyTheme);
 
 /* ---------- Navigation ---------- */
-let page = 'home', filter = '', query = '';
-const TITLES = { home: 'My Accounts', accounts: 'Accounts', activity: 'Activity', settings: 'Settings' };
+const PAGES = ['home','accounts','activity','reports','categories','settings'];
+const TITLES = { home: 'My Accounts', accounts: 'Accounts', activity: 'Activity', reports: 'Reports', categories: 'Categories & budgets', settings: 'Settings' };
+const SUBPAGES = { accounts: 'settings', categories: 'settings' };   // pages reached from Settings on the phone
+let page = 'home', prevPage = 'home', filter = '', catFilter = '', query = '', rMonth = thisMonth(), rTab = 'overview';
 function go(p){
+  if (p !== page) prevPage = page;
   page = p;
-  $$('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === p));
-  ['home','accounts','activity','settings'].forEach(x => $('#pg-' + x).hidden = x !== p);
+  const navOn = SUBPAGES[p] && matchMedia('(max-width:899px)').matches ? SUBPAGES[p] : p;
+  $$('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === p || (b.classList.contains('tab') && b.dataset.page === navOn)));
+  PAGES.forEach(x => $('#pg-' + x).hidden = x !== p);
   render(); window.scrollTo(0, 0);
 }
 
@@ -409,12 +547,10 @@ function render(){
   $('#greet').textContent = page === 'home' ? (cfg.name ? `${g}, ${cfg.name}` : g) : '';
   $('#greet').hidden = page !== 'home';
   $('#title').textContent = TITLES[page];
+  $('#backBtn').hidden = !SUBPAGES[page];
   $('#topEye').innerHTML = hidden ? I.eyeoff : I.eye;
   $('#topEye').hidden = page === 'settings' || (page === 'home' && db.accounts.length > 0);
-  if (page === 'home') renderHome();
-  if (page === 'accounts') renderAccounts();
-  if (page === 'activity') renderActivity();
-  if (page === 'settings') renderSettings();
+  ({ home: renderHome, accounts: renderAccounts, activity: renderActivity, reports: renderReports, categories: renderCategories, settings: renderSettings })[page]();
 }
 
 /* ---------- Rows ---------- */
@@ -427,18 +563,43 @@ function accRow(a, withEdit){
     ${withEdit ? `<button class="editbtn" data-edit-acc="${a.id}" aria-label="Edit ${esc(a.name)}">${I.edit}</button>` : ''}
   </div>`;
 }
+function txIcon(t){
+  const c = t.type !== 'tr' && catById(t.cat);
+  return c ? `<div class="tic" style="background:${tint(c.color)}">${esc(c.emoji)}</div>` : `<div class="tic c-${t.type}">${I[t.type]}</div>`;
+}
 function txRow(t, acc, run){
   const from = accById(t.acc), to = accById(t.to), cur = from ? from.cur : '';
+  const c = catById(t.cat);
   let sign = t.type === 'in' ? '+' : t.type === 'out' ? '−' : '';
   if (t.type === 'tr' && acc) sign = effect(t, acc.id) > 0 ? '+' : '−';
   const where = t.type === 'tr' ? `${esc(from ? from.name : '?')} → ${esc(to ? to.name : '?')}` : esc(from ? from.name : '?');
-  const label = t.desc || (t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer');
+  const label = t.desc || (c ? c.name : t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer');
+  const sub = [t.desc && c ? esc(c.name) : '', acc && t.type !== 'tr' ? '' : where, acc ? '' : shortDate(t.date)].filter(Boolean).join(' · ');
   const amount = hidden ? money(0, cur) : sign + fmt(t.amount, cur);
   return `<div class="li" data-tx="${t.id}">
-    <div class="tic c-${t.type}">${I[t.type]}</div>
-    <div class="li-main"><div class="nm">${esc(label)}</div><div class="sm">${where}${acc ? '' : ' · ' + shortDate(t.date)}</div></div>
+    ${txIcon(t)}
+    <div class="li-main"><div class="nm">${esc(label)}</div><div class="sm">${sub}</div></div>
     <div class="amt ${hidden ? '' : t.type}">${amount}${run !== undefined ? `<div class="sm">Bal ${money(run, acc.cur)}</div>` : ''}</div>
   </div>`;
+}
+
+/* ---------- Budgets (shared by Home and Reports) ---------- */
+function spentByCat(month, cur){
+  const m = {};
+  db.txns.forEach(t => { if (t.type === 'out' && t.date.slice(0, 7) === month && inCur(t, cur)) m[t.cat || ''] = (m[t.cat || ''] || 0) + t.amount; });
+  return m;
+}
+const budgetColor = p => p > 1 ? 'var(--out)' : p >= .75 ? 'var(--warn)' : 'var(--in)';
+function budgetRow(c, spent, cur){
+  const p = c.budget ? spent / c.budget : 0, left = c.budget - spent;
+  const status = left >= 0 ? `${money(left, cur)} left` : `<span class="out">${money(-left, cur)} over</span>`;
+  return `<div class="li" data-edit-cat="${c.id}">
+    <div class="tic" style="background:${tint(c.color)}">${esc(c.emoji)}</div>
+    <div class="li-main">
+      <div class="between"><span class="nm">${esc(c.name)}</span><span class="sm">${money0(spent, cur)} of ${money0(c.budget, cur)}</span></div>
+      <div class="pbar"><b style="width:${Math.min(100, p * 100).toFixed(1)}%;background:${budgetColor(p)}"></b></div>
+      <div class="between sm"><span>${status}</span><span>${Math.round(p * 100)}%</span></div>
+    </div></div>`;
 }
 
 /* ---------- Home ---------- */
@@ -450,16 +611,14 @@ function renderHome(){
       <button class="btn primary" data-act="addAcc">Add your first account</button></div>`;
     return;
   }
-  const tot = totals(), curs = Object.keys(tot), main = db.accounts[0].cur;
-  const others = curs.filter(c => c !== main);
-  const month = today().slice(0, 7);
+  const tot = totals(), main = repCur();
+  const others = Object.keys(tot).filter(c => c !== main);
+  const month = thisMonth();
   let inM = 0, outM = 0;
   db.txns.forEach(t => {
-    if (t.date.slice(0, 7) !== month) return;
-    const a = accById(t.acc); if (!a || a.cur !== main) return;
+    if (t.date.slice(0, 7) !== month || !inCur(t, main)) return;
     if (t.type === 'in') inM += t.amount; if (t.type === 'out') outM += t.amount;
   });
-  const monthName = new Date().toLocaleDateString('en-GB', {month: 'long'});
   const recent = [...db.txns].sort(byDate).reverse().slice(0, 5);
 
   let backup = '';
@@ -467,12 +626,17 @@ function renderHome(){
     backup = `<div class="banner">${I.save}<span>${cfg.lastBackup ? `Last backup ${daysSince(cfg.lastBackup)} days ago` : 'No backup yet'}</span><a data-act="export">Back up now</a></div>`;
   }
 
+  // the 3 budgets closest to (or over) their limit
+  const spent = spentByCat(month, main);
+  const budgets = db.cats.filter(c => c.type === 'out' && c.budget > 0)
+    .map(c => ({ c, s: spent[c.id] || 0 })).sort((a, b) => b.s / b.c.budget - a.s / a.c.budget).slice(0, 3);
+
   el.innerHTML = `
     <div class="hero">
       <div class="k">Total balance</div>
-      <div class="v">${money(tot[main], main)}</div>
+      <div class="v">${money(tot[main] || 0, main)}</div>
       ${others.map(c => `<div class="o">+ ${money(tot[c], c)}</div>`).join('')}
-      <div class="s">${hidden ? 'Tap the eye to show' : `${monthName}: ${inM ? '+' : ''}${fmt(inM, main)} in · ${outM ? '−' : ''}${fmt(outM, main)} out`}</div>
+      <div class="s">${hidden ? 'Tap the eye to show' : `${monthName(month, {month: 'long'})}: ${inM ? '+' : ''}${fmt(inM, main)} in · ${outM ? '−' : ''}${fmt(outM, main)} out`}</div>
       <button class="eye" data-act="eye" aria-label="Show or hide balances">${hidden ? I.eyeoff : I.eye}</button>
     </div>
     <div class="qa">
@@ -481,8 +645,10 @@ function renderHome(){
       <button data-act="tr"><b class="c-tr">${I.tr}</b>Transfer</button>
     </div>
     ${backup}
-    <div class="sec">Accounts <a data-act="addAcc">+ Add</a></div>
+    <div class="sec">Accounts <span class="links"><a data-act="addAcc">+ Add</a><a data-page="accounts">Manage</a></span></div>
     <div class="card list">${db.accounts.map(a => accRow(a)).join('')}</div>
+    ${budgets.length ? `<div class="sec">Budgets this month <a data-act="budgets">See all</a></div>
+      <div class="card list">${budgets.map(b => budgetRow(b.c, b.s, main)).join('')}</div>` : ''}
     <div class="sec">Recent <a data-page="activity">See all</a></div>
     ${recent.length ? `<div class="card list">${recent.map(t => txRow(t)).join('')}</div>` : `<div class="card empty">No transactions yet. Tap Income or Expense to add one.</div>`}`;
 }
@@ -497,9 +663,16 @@ function renderAccounts(){
 /* ---------- Activity ---------- */
 function renderActivity(){
   if (filter && !accById(filter)) filter = '';
-  const sel = $('#filterAcc');
-  sel.innerHTML = `<option value="">All accounts</option>` + db.accounts.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('');
-  sel.value = filter;
+  if (catFilter && catFilter !== 'none' && !catById(catFilter)) catFilter = '';
+  $('#filterAcc').innerHTML = `<option value="">All accounts</option>` + db.accounts.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('');
+  $('#filterAcc').value = filter;
+  const opt = c => `<option value="${c.id}">${esc(c.emoji)} ${esc(c.name)}</option>`;
+  $('#filterCat').innerHTML = `<option value="">All categories</option>` +
+    `<optgroup label="Expenses">${db.cats.filter(c => c.type === 'out').map(opt).join('')}</optgroup>` +
+    `<optgroup label="Income">${db.cats.filter(c => c.type === 'in').map(opt).join('')}</optgroup>` +
+    `<option value="none">Uncategorised</option>`;
+  $('#filterCat').value = catFilter;
+  $('#search').value = query;
   renderTxnList();
 }
 function renderTxnList(){
@@ -513,23 +686,187 @@ function renderTxnList(){
   }
   const q = query.trim().toLowerCase();
   if (q) rows = rows.filter(t => (t.desc || '').toLowerCase().includes(q));
+  if (catFilter === 'none') rows = rows.filter(t => t.type !== 'tr' && !catById(t.cat));
+  else if (catFilter) rows = rows.filter(t => t.cat === catFilter);
+  const narrowed = q || catFilter;
   rows.reverse();
   if (!rows.length){
-    list.innerHTML = `<div class="card empty" style="margin-top:12px">${q ? 'No matches.' : db.accounts.length ? 'No transactions yet. Tap + to add one.' : 'Add an account first.'}</div>`;
+    list.innerHTML = `<div class="card empty" style="margin-top:4px">${narrowed ? 'No matches.' : db.accounts.length ? 'No transactions yet. Tap + to add one.' : 'Add an account first.'}</div>`;
     return;
   }
   let h = '', last = '', group = [];
   const flush = () => { if (group.length) h += `<div class="card list">${group.join('')}</div>`; group = []; };
   rows.forEach(t => {
     if (t.date !== last){ flush(); h += `<div class="day">${niceDate(t.date)}</div>`; last = t.date; }
-    group.push(txRow(t, a, run ? run.get(t.id) : undefined));
+    group.push(txRow(t, a, run && !narrowed ? run.get(t.id) : undefined));
   });
   flush();
-  if (a && !q) h += `<div class="day">Start</div><div class="card list"><div class="li" style="cursor:default"><div class="li-main"><div class="nm">Opening balance</div></div><div class="amt">${money(a.opening, a.cur)}</div></div></div>`;
+  if (a && !narrowed) h += `<div class="day">Start</div><div class="card list"><div class="li" style="cursor:default"><div class="li-main"><div class="nm">Opening balance</div></div><div class="amt">${money(a.opening, a.cur)}</div></div></div>`;
   list.innerHTML = h;
 }
 $('#filterAcc').onchange = e => { filter = e.target.value; renderTxnList(); };
+$('#filterCat').onchange = e => { catFilter = e.target.value; renderTxnList(); };
 $('#search').oninput = e => { query = e.target.value; renderTxnList(); };
+
+/* ---------- Charts (plain SVG, works offline) ---------- */
+function donutSVG(parts, total){
+  const R = 62, C = 2 * Math.PI * R, gap = parts.length > 1 ? 2 : 0;
+  let off = 0;
+  const segs = parts.map(p => {
+    const len = p.v / total * C;
+    const s = `<circle r="${R}" cx="80" cy="80" fill="none" stroke="${p.color}" stroke-width="22" stroke-dasharray="${Math.max(len - gap, 0.5).toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 80 80)"/>`;
+    off += len; return s;
+  }).join('');
+  return `<svg viewBox="0 0 160 160"><circle r="${R}" cx="80" cy="80" fill="none" style="stroke:var(--line)" stroke-width="22"/>${segs}</svg>`;
+}
+function barsSVG(data){   // [{label, inc, out, sel}]
+  const W = 340, H = 170, pt = 10, pb = 24, n = data.length, gw = W / n;
+  const mx = Math.max(1, ...data.flatMap(d => [d.inc, d.out]));
+  const bw = Math.min(16, gw / 3.2), hh = H - pt - pb;
+  let s = `<line x1="0" x2="${W}" y1="${H - pb}" y2="${H - pb}" style="stroke:var(--line)"/>`;
+  data.forEach((d, i) => {
+    const cx = i * gw + gw / 2, hi = hh * d.inc / mx, ho = hh * d.out / mx;
+    if (d.sel) s += `<rect x="${i * gw + 3}" y="${pt - 4}" width="${gw - 6}" height="${hh + 8}" rx="10" style="fill:var(--soft)"/>`;
+    s += `<rect x="${cx - bw - 2}" y="${H - pb - hi}" width="${bw}" height="${Math.max(hi, d.inc ? 2 : 0)}" rx="4" style="fill:var(--in)"/>`;
+    s += `<rect x="${cx + 2}" y="${H - pb - ho}" width="${bw}" height="${Math.max(ho, d.out ? 2 : 0)}" rx="4" style="fill:var(--out)"/>`;
+    s += `<text x="${cx}" y="${H - 7}" text-anchor="middle" font-size="11.5" style="fill:${d.sel ? 'var(--text)' : 'var(--muted)'}" font-weight="${d.sel ? 700 : 500}">${d.label}</text>`;
+  });
+  return `<svg class="svgchart" viewBox="0 0 ${W} ${H}">${s}</svg>`;
+}
+function lineSVG(vals, labels, sel, cur){
+  const W = 340, H = 170, pl = 14, pr = 14, pt = 26, pb = 24, n = vals.length;
+  let mn = Math.min(...vals), mx = Math.max(...vals);
+  if (mn === mx){ mn -= 100; mx += 100; }
+  const pad = (mx - mn) * .12; mn -= pad; mx += pad;
+  const x = i => pl + (W - pl - pr) * (n === 1 ? .5 : i / (n - 1));
+  const y = v => pt + (H - pt - pb) * (1 - (v - mn) / (mx - mn));
+  const pts = vals.map((v, i) => [x(i), y(v)]);
+  const line = 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L');
+  const area = line + ` L${x(n - 1).toFixed(1)},${H - pb} L${x(0).toFixed(1)},${H - pb} Z`;
+  let s = `<defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--acc);stop-opacity:.28"/><stop offset="1" style="stop-color:var(--acc);stop-opacity:0"/></linearGradient></defs>`;
+  if (mn < 0 && mx > 0) s += `<line x1="${pl}" x2="${W - pr}" y1="${y(0)}" y2="${y(0)}" stroke-dasharray="4 4" style="stroke:var(--muted)"/>`;
+  s += `<path d="${area}" fill="url(#lg)"/><path d="${line}" fill="none" style="stroke:var(--acc)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  pts.forEach((p, i) => {
+    s += `<circle cx="${p[0]}" cy="${p[1]}" r="${i === sel ? 5 : 3.5}" style="fill:var(--card);stroke:var(--acc)" stroke-width="2.5"/>`;
+    s += `<text x="${p[0]}" y="${H - 7}" text-anchor="middle" font-size="11.5" style="fill:${i === sel ? 'var(--text)' : 'var(--muted)'}" font-weight="${i === sel ? 700 : 500}">${labels[i]}</text>`;
+  });
+  if (!hidden){
+    const p = pts[sel], tx = Math.min(Math.max(p[0], 48), W - 48);
+    s += `<text x="${tx}" y="${p[1] - 11}" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--text)">${fmt0(vals[sel], cur).replace('&amp;', '&')}</text>`;
+  }
+  return `<svg class="svgchart" viewBox="0 0 ${W} ${H}">${s}</svg>`;
+}
+
+/* ---------- Reports & Budgets ---------- */
+function renderReports(){
+  $$('input[name=rtab]').forEach(r => r.checked = r.value === rTab);
+  $('#mLabel').textContent = monthName(rMonth);
+  $('#mNext').disabled = rMonth >= thisMonth();
+  const body = $('#repBody');
+  if (!db.accounts.length){ body.innerHTML = `<div class="card empty">Add an account and some transactions to see reports.</div>`; return; }
+  body.innerHTML = rTab === 'budgets' ? budgetsHTML() : overviewHTML();
+}
+$$('input[name=rtab]').forEach(r => r.onchange = () => { rTab = r.value; renderReports(); });
+
+function overviewHTML(){
+  const cur = repCur(), month = rMonth;
+  const mtx = db.txns.filter(t => t.date.slice(0, 7) === month && inCur(t, cur));
+  const inc = mtx.filter(t => t.type === 'in').reduce((s, t) => s + t.amount, 0);
+  const out = mtx.filter(t => t.type === 'out').reduce((s, t) => s + t.amount, 0);
+  const net = inc - out;
+  const multi = db.accounts.some(a => a.cur !== cur);
+
+  // spending by category
+  const spent = spentByCat(month, cur);
+  const parts = Object.entries(spent).map(([id, v]) => { const c = catById(id);
+    return { id: id || 'none', v, name: c ? c.name : 'Uncategorised', emoji: c ? c.emoji : '❔', color: c ? c.color : '#94a3b8' }; })
+    .sort((a, b) => b.v - a.v);
+  const spendCard = out ? `
+    <div class="card chart">
+      <h3>Spending by category</h3>
+      <div class="donutwrap">${donutSVG(parts, out)}<div class="c"><span class="sm">Spent</span><b>${money0(out, cur)}</b></div></div>
+      <div class="list" style="padding:0">${parts.map(p => `
+        <div class="li" data-cat-filter="${p.id}">
+          <div class="tic" style="background:${tint(p.color)}">${esc(p.emoji)}</div>
+          <div class="li-main"><div class="between"><span class="nm">${esc(p.name)}</span><span class="amt">${money(p.v, cur)}</span></div>
+            <div class="pbar"><b style="width:${(p.v / out * 100).toFixed(1)}%;background:${p.color}"></b></div>
+            <div class="sm">${Math.round(p.v / out * 100)}% of spending</div></div>
+        </div>`).join('')}</div>
+    </div>` : `<div class="card chart"><h3>Spending by category</h3><div class="empty" style="padding:16px">No spending recorded in ${monthName(month, {month: 'long'})}.</div></div>`;
+
+  // income sources
+  const incBy = {};
+  mtx.filter(t => t.type === 'in').forEach(t => incBy[t.cat || ''] = (incBy[t.cat || ''] || 0) + t.amount);
+  const incParts = Object.entries(incBy).map(([id, v]) => { const c = catById(id); return { id: id || 'none', v, name: c ? c.name : 'Uncategorised', emoji: c ? c.emoji : '❔', color: c ? c.color : '#94a3b8' }; }).sort((a, b) => b.v - a.v);
+  const incCard = inc ? `<div class="card chart"><h3>Income sources</h3><div class="list" style="padding:0">${incParts.map(p => `
+    <div class="li" data-cat-filter="${p.id}"><div class="tic" style="background:${tint(p.color)}">${esc(p.emoji)}</div>
+      <div class="li-main"><div class="nm">${esc(p.name)}</div><div class="sm">${Math.round(p.v / inc * 100)}% of income</div></div>
+      <div class="amt in">${money(p.v, cur)}</div></div>`).join('')}</div></div>` : '';
+
+  // last 6 months
+  const months = [...Array(6)].map((_, i) => addMonth(month, i - 5));
+  const bars = months.map(k => {
+    let a = 0, b = 0;
+    db.txns.forEach(t => { if (t.date.slice(0, 7) === k && inCur(t, cur)){ if (t.type === 'in') a += t.amount; if (t.type === 'out') b += t.amount; } });
+    return { label: monthName(k, {month: 'short'}), inc: a, out: b, sel: k === month };
+  });
+  const curAccs = db.accounts.filter(a => a.cur === cur);
+  const balAt = end => curAccs.reduce((s, a) => s + a.opening, 0) + db.txns.reduce((s, t) => t.date <= end ? s + curAccs.reduce((x, a) => x + effect(t, a.id), 0) : s, 0);
+  const bals = months.map(k => balAt(monthEnd(k)));
+
+  return `
+    <div class="tiles">
+      <div class="card tile"><div class="k">Money in</div><div class="v in">${money(inc, cur)}</div></div>
+      <div class="card tile"><div class="k">Money out</div><div class="v out">${money(out, cur)}</div></div>
+      <div class="card tile net"><div class="k">${net >= 0 ? 'Saved' : 'Overspent'}</div><div class="v">${money(Math.abs(net), cur)}</div></div>
+    </div>
+    ${multi ? `<p class="sm" style="margin:10px 4px 0">Reports include ${esc(cur)} accounts only.</p>` : ''}
+    ${spendCard}
+    ${incCard}
+    <div class="card chart"><h3>Income vs expenses</h3><div class="sub">Last 6 months</div>
+      ${barsSVG(bars)}
+      <div class="legend"><span><i style="background:var(--in)"></i>Income</span><span><i style="background:var(--out)"></i>Expenses</span></div></div>
+    <div class="card chart"><h3>Balance over time</h3><div class="sub">Total ${esc(cur)} balance at the end of each month</div>
+      ${lineSVG(bals, bars.map(b => b.label), 5, cur)}</div>`;
+}
+
+function budgetsHTML(){
+  const cur = repCur(), month = rMonth;
+  const spent = spentByCat(month, cur);
+  const withB = db.cats.filter(c => c.type === 'out' && c.budget > 0);
+  const without = db.cats.filter(c => c.type === 'out' && !(c.budget > 0));
+  const totB = withB.reduce((s, c) => s + c.budget, 0), totS = withB.reduce((s, c) => s + (spent[c.id] || 0), 0);
+  let daysLeft = '';
+  if (month === thisMonth()){ const d = Number(monthEnd(month).slice(8)) - Number(today().slice(8)); daysLeft = `${d} day${d === 1 ? '' : 's'} left in the month`; }
+  const p = totB ? totS / totB : 0;
+  const summary = withB.length ? `
+    <div class="card pad">
+      <div class="between"><b>Total budgeted</b><span class="sm">${daysLeft}</span></div>
+      <div style="font-size:22px;font-weight:800;margin-top:6px">${money0(totS, cur)} <span class="sm" style="font-size:14px;font-weight:600">of ${money0(totB, cur)}</span></div>
+      <div class="pbar" style="height:10px"><b style="width:${Math.min(100, p * 100).toFixed(1)}%;background:${budgetColor(p)}"></b></div>
+      <div class="sm">${totB - totS >= 0 ? `${money(totB - totS, cur)} left to spend` : `<span class="out">${money(totS - totB, cur)} over budget</span>`}</div>
+    </div>
+    <div class="sec">Your budgets</div>
+    <div class="card list">${withB.map(c => ({ c, s: spent[c.id] || 0 })).sort((a, b) => b.s / b.c.budget - a.s / a.c.budget).map(x => budgetRow(x.c, x.s, cur)).join('')}</div>`
+    : `<div class="card welcome" style="padding:26px 20px"><h2 style="font-size:18px">No budgets yet</h2><p>Set a monthly limit for a category below, e.g. Groceries. The bar turns amber at 75% and red when you go over.</p></div>`;
+  return summary + (without.length ? `
+    <div class="sec">No budget set <span class="sm" style="font-weight:500">Tap to set one</span></div>
+    <div class="card list">${without.map(c => `<div class="li" data-edit-cat="${c.id}"><div class="tic" style="background:${tint(c.color)}">${esc(c.emoji)}</div>
+      <div class="li-main"><div class="nm">${esc(c.name)}</div><div class="sm">Spent ${money(spent[c.id] || 0, cur)} this month</div></div><span class="sm">Set ›</span></div>`).join('')}</div>` : '');
+}
+
+/* ---------- Categories page ---------- */
+function renderCategories(){
+  const cur = repCur();
+  const row = c => `<div class="li" data-edit-cat="${c.id}"><div class="tic" style="background:${tint(c.color)}">${esc(c.emoji)}</div>
+    <div class="li-main"><div class="nm">${esc(c.name)}</div><div class="sm">${c.type === 'out' ? (c.budget > 0 ? 'Budget ' + money0(c.budget, cur) + ' a month' : 'No budget') : 'Income'} · ${db.txns.filter(t => t.cat === c.id).length} used</div></div>
+    <button class="editbtn" data-edit-cat="${c.id}" aria-label="Edit">${I.edit}</button></div>`;
+  $('#pg-categories').innerHTML = `
+    <div class="sec">Expenses <a data-act="addCat" data-type="out">+ Add</a></div>
+    <div class="card list">${db.cats.filter(c => c.type === 'out').map(row).join('')}</div>
+    <div class="sec">Income <a data-act="addCat" data-type="in">+ Add</a></div>
+    <div class="card list">${db.cats.filter(c => c.type === 'in').map(row).join('')}</div>`;
+}
 
 /* ---------- Settings ---------- */
 function renderSettings(){
@@ -540,7 +877,7 @@ function renderSettings(){
   $('#ver').textContent = VERSION;
   $('#lastBackup').textContent = cfg.lastBackup ? `Last backup: ${niceDate(cfg.lastBackup)}.` : 'No backup made yet.';
   const n = $('#storageNote');
-  const s = `${db.accounts.length} account${db.accounts.length === 1 ? '' : 's'} and ${db.txns.length} transaction${db.txns.length === 1 ? '' : 's'} stored on this device.`;
+  const s = `${db.accounts.length} account${db.accounts.length === 1 ? '' : 's'}, ${db.txns.length} transaction${db.txns.length === 1 ? '' : 's'} and ${db.cats.length} categories stored on this device.`;
   n.textContent = s;
   if (navigator.storage && navigator.storage.persisted){
     navigator.storage.persisted().then(p => {
@@ -560,7 +897,7 @@ $('#applyCur').onclick = () => {
 };
 
 function exportBackup(){
-  const blob = new Blob([JSON.stringify({ app: 'my-accounts', version: 1, exported: new Date().toISOString(), ...db }, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ app: 'my-accounts', version: 2, exported: new Date().toISOString(), ...db }, null, 2)], { type: 'application/json' });
   const u = URL.createObjectURL(blob), a = document.createElement('a');
   a.href = u; a.download = `accounts-backup-${today()}.json`;
   document.body.appendChild(a); a.click(); a.remove();
@@ -575,31 +912,59 @@ $('#importFile').onchange = async e => {
     const d = JSON.parse(await f.text());
     if (!Array.isArray(d.accounts) || !Array.isArray(d.txns)) throw 0;
     if (!confirm(`Replace the data on this device with this backup (${d.accounts.length} accounts, ${d.txns.length} transactions)?`)) return;
-    db = { accounts: d.accounts, txns: d.txns }; save(); toast('Backup imported');
+    db = { accounts: d.accounts, txns: d.txns };
+    if (Array.isArray(d.cats)) db.cats = d.cats; else ensureCats();
+    save(); toast('Backup imported');
   } catch(_) { alert("That file isn't a valid backup."); }
 };
 $('#wipeBtn').onclick = () => {
   if (confirm('Erase all accounts and transactions on this device? Export a backup first if you might need them.') && confirm('Are you sure? This cannot be undone.')){
-    db = { accounts: [], txns: [] }; save(); toast('All data erased');
+    db = { accounts: [], txns: [] }; ensureCats(); save(); toast('All data erased');
   }
 };
 
 /* ---------- Transaction dialog ---------- */
 const dT = $('#dlgTxn');
-let editing = null;
+let editing = null, selCat = null;
 const accOptions = () => db.accounts.map(a => `<option value="${a.id}">${esc(a.name)} (${esc(a.cur)})</option>`).join('');
 const curType = () => dT.querySelector('input[name=type]:checked').value;
-function syncType(){ const tr = curType() === 'tr'; $('#toWrap').hidden = !tr; $('#lblAcc').textContent = tr ? 'From account' : 'Account'; }
+function syncType(){
+  const type = curType(), tr = type === 'tr';
+  $('#toWrap').hidden = !tr; $('#catWrap').hidden = tr;
+  $('#lblAcc').textContent = tr ? 'From account' : 'Account';
+  const c = catById(selCat); if (c && c.type !== type) selCat = null;
+  renderChips();
+}
 function setType(v){ dT.querySelector(`input[name=type][value="${v}"]`).checked = true; syncType(); }
 dT.querySelectorAll('input[name=type]').forEach(r => r.onchange = syncType);
+function renderChips(){
+  const type = curType(); if (type === 'tr') return;
+  $('#fCats').innerHTML = db.cats.filter(c => c.type === type).map(c =>
+    `<button type="button" class="chip${c.id === selCat ? ' on' : ''}" data-chip="${c.id}">${esc(c.emoji)} ${esc(c.name)}</button>`).join('') +
+    `<button type="button" class="chip new" data-chip="new">+ New</button>`;
+}
+$('#fCats').onclick = e => {
+  const b = e.target.closest('[data-chip]'); if (!b) return;
+  if (b.dataset.chip === 'new'){ openCat(null, curType(), true); return; }
+  selCat = selCat === b.dataset.chip ? null : b.dataset.chip; renderChips();
+};
+// Typing a description you've used before picks the same category again
+$('#fDesc').addEventListener('change', () => {
+  if (selCat || curType() === 'tr') return;
+  const d = $('#fDesc').value.trim().toLowerCase(); if (!d) return;
+  const prev = [...db.txns].sort(byDate).reverse().find(t => t.type === curType() && t.cat && (t.desc || '').toLowerCase() === d);
+  if (prev && catById(prev.cat)){ selCat = prev.cat; renderChips(); }
+});
 
 function openTxn(id, type){
   if (!db.accounts.length){ openAcc(); return; }
   editing = id ? db.txns.find(t => t.id === id) : null;
   $('#fAcc').innerHTML = accOptions(); $('#fTo').innerHTML = accOptions();
+  $('#descList').innerHTML = [...new Set(db.txns.map(t => t.desc).filter(Boolean))].slice(-200).map(d => `<option value="${esc(d)}">`).join('');
   $('#txnErr').textContent = '';
   if (editing){
     $('#txnTitle').textContent = 'Edit transaction';
+    selCat = editing.cat || null;
     setType(editing.type);
     $('#fAcc').value = editing.acc; if (editing.to) $('#fTo').value = editing.to;
     $('#fAmt').value = (editing.amount / 100).toFixed(2);
@@ -607,6 +972,7 @@ function openTxn(id, type){
     $('#txnDel').hidden = false;
   } else {
     $('#txnTitle').textContent = 'New transaction';
+    selCat = null;
     setType(type || 'out');
     $('#fAcc').value = filter && accById(filter) && page === 'activity' ? filter : db.accounts[0].id;
     $('#fTo').value = (db.accounts.find(a => a.id !== $('#fAcc').value) || db.accounts[0]).id;
@@ -626,10 +992,11 @@ function saveTxn(){
     if (acc === to) return err('Choose two different accounts.');
     if (accById(acc).cur !== accById(to).cur) return err('These accounts use different currencies. Record an expense in one and income in the other instead.');
   }
-  const t = { type, acc, to: type === 'tr' ? to : null, amount, desc, date };
+  const t = { type, acc, to: type === 'tr' ? to : null, cat: type === 'tr' ? null : selCat, amount, desc, date };
+  const wasEditing = !!editing;
   if (editing) Object.assign(editing, t);
   else db.txns.push({ id: uid(), ts: Date.now(), ...t });
-  dT.close(); save(); toast(editing ? 'Transaction updated' : 'Transaction added');
+  dT.close(); save(); toast(wasEditing ? 'Transaction updated' : 'Transaction added');
 }
 $('#txnSave').onclick = saveTxn;
 $('#txnDel').onclick = () => {
@@ -659,9 +1026,10 @@ function saveAcc(){
   const opening = ov === '' ? 0 : minor(ov);
   if (!name) return err('Give the account a name.');
   if (!Number.isFinite(opening)) return err('Opening balance must be a number, e.g. 1500 or -250.');
+  const wasEditing = !!editingAcc;
   if (editingAcc) Object.assign(editingAcc, { name, cur, opening, color });
   else db.accounts.push({ id: uid(), name, cur, opening, color, created: today() });
-  dA.close(); save(); toast(editingAcc ? 'Account updated' : 'Account added');
+  dA.close(); save(); toast(wasEditing ? 'Account updated' : 'Account added');
 }
 $('#accSave').onclick = saveAcc;
 $('#accDel').onclick = () => {
@@ -673,25 +1041,91 @@ $('#accDel').onclick = () => {
   dA.close(); save(); toast('Account deleted');
 };
 
+/* ---------- Category dialog ---------- */
+const dC = $('#dlgCat');
+let editingCat = null, catFromTxn = false;
+$('#cEmojis').innerHTML = EMOJIS.map(e => `<button type="button" data-emoji="${e}">${e}</button>`).join('');
+$('#cColors').innerHTML = CAT_COLORS.map((c, i) => `<input type="radio" name="ccolor" id="cc${i}" value="${c}"><label for="cc${i}" style="background:${c}" aria-label="Colour ${i + 1}"></label>`).join('');
+const markEmoji = () => $$('#cEmojis button').forEach(b => b.classList.toggle('on', b.dataset.emoji === $('#cEmoji').value.trim()));
+$('#cEmojis').onclick = e => { const b = e.target.closest('[data-emoji]'); if (b){ $('#cEmoji').value = b.dataset.emoji; markEmoji(); } };
+$('#cEmoji').oninput = markEmoji;
+const catType = () => dC.querySelector('input[name=ctype]:checked').value;
+dC.querySelectorAll('input[name=ctype]').forEach(r => r.onchange = () => $('#budgetWrap').hidden = catType() !== 'out');
+function openCat(id, type, fromTxn){
+  editingCat = id ? catById(id) : null; catFromTxn = !!fromTxn;
+  const t = editingCat ? editingCat.type : (type || 'out');
+  dC.querySelector(`input[name=ctype][value="${t}"]`).checked = true;
+  $('#budgetWrap').hidden = t !== 'out';
+  $('#catErr').textContent = '';
+  $('#catTitle').textContent = editingCat ? 'Edit category' : 'New category';
+  $('#cName').value = editingCat ? editingCat.name : '';
+  $('#cEmoji').value = editingCat ? editingCat.emoji : '📦';
+  $('#cBudget').value = editingCat && editingCat.budget ? (editingCat.budget / 100).toLocaleString('en-GB', {maximumFractionDigits: 2}) : '';
+  const col = editingCat ? editingCat.color : CAT_COLORS[db.cats.length % CAT_COLORS.length];
+  $$('input[name=ccolor]').forEach(r => r.checked = r.value === col);
+  markEmoji();
+  $('#catDel').hidden = !editingCat;
+  dC.showModal();
+}
+function saveCat(){
+  const err = m => { $('#catErr').textContent = m; };
+  const type = catType(), name = $('#cName').value.trim(), emoji = $('#cEmoji').value.trim() || '📦';
+  const color = (dC.querySelector('input[name=ccolor]:checked') || {}).value || CAT_COLORS[0];
+  const bv = $('#cBudget').value.trim(), budget = type === 'out' && bv ? minor(bv) : 0;
+  if (!name) return err('Give the category a name.');
+  if (!Number.isFinite(budget) || budget < 0) return err('Budget must be a number, e.g. 20,000');
+  if (db.cats.some(c => c !== editingCat && c.type === type && c.name.toLowerCase() === name.toLowerCase())) return err('A category with that name already exists.');
+  let c;
+  if (editingCat){
+    if (editingCat.type !== type){   // moved between income/expense: unlink transactions of the other type
+      db.txns.forEach(t => { if (t.cat === editingCat.id && t.type !== type) t.cat = null; });
+    }
+    c = Object.assign(editingCat, { type, name, emoji, color, budget });
+  } else { c = { id: uid(), type, name, emoji, color, budget }; db.cats.push(c); }
+  dC.close();
+  if (catFromTxn && dT.open){
+    store.set(KEY, JSON.stringify(db));
+    if (curType() !== type) setType(type);
+    selCat = c.id; renderChips();
+  } else save();
+  toast(editingCat ? 'Category updated' : 'Category added');
+}
+$('#catSave').onclick = saveCat;
+$('#catDel').onclick = () => {
+  const c = editingCat; if (!c) return;
+  const n = db.txns.filter(t => t.cat === c.id).length;
+  if (!confirm(`Delete "${c.name}"?${n ? ` Its ${n} transaction${n === 1 ? '' : 's'} will become Uncategorised.` : ''}`)) return;
+  db.txns.forEach(t => { if (t.cat === c.id) t.cat = null; });
+  db.cats = db.cats.filter(x => x !== c);
+  dC.close(); save(); toast('Category deleted');
+};
+
 $$('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());
-dT.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); saveTxn(); } });
-dA.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); saveAcc(); } });
+[[dT, saveTxn], [dA, saveAcc], [dC, saveCat]].forEach(([d, fn]) =>
+  d.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); fn(); } }));
 
 /* ---------- One click handler for the whole app ---------- */
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-act],[data-edit-acc],[data-acc],[data-tx],[data-page]');
+  const el = e.target.closest('[data-act],[data-edit-acc],[data-edit-cat],[data-cat-filter],[data-acc],[data-tx],[data-page]');
   if (!el || el.closest('dialog')) return;
   const d = el.dataset;
   if (d.page){ go(d.page); return; }
   if (d.editAcc){ openAcc(d.editAcc); return; }
-  if (d.acc){ filter = d.acc; query = ''; $('#search').value = ''; go('activity'); return; }
+  if (d.editCat){ openCat(d.editCat); return; }
+  if (d.catFilter){ catFilter = d.catFilter; filter = ''; query = ''; go('activity'); return; }
+  if (d.acc){ filter = d.acc; catFilter = ''; query = ''; go('activity'); return; }
   if (d.tx){ openTxn(d.tx); return; }
   switch (d.act){
     case 'eye': hidden = !hidden; render(); break;
     case 'addAcc': openAcc(); break;
+    case 'addCat': openCat(null, d.type); break;
     case 'add': openTxn(); break;
     case 'in': case 'out': case 'tr': openTxn(null, d.act); break;
     case 'export': exportBackup(); break;
+    case 'budgets': rTab = 'budgets'; rMonth = thisMonth(); go('reports'); break;
+    case 'mprev': rMonth = addMonth(rMonth, -1); renderReports(); break;
+    case 'mnext': if (rMonth < thisMonth()){ rMonth = addMonth(rMonth, 1); renderReports(); } break;
+    case 'back': go(SUBPAGES[page] || prevPage); break;
   }
 });
 

@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>My Accounts</title>
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Accounts">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#f4f6f6;--card:#fff;--text:#14201f;--muted:#64748b;--line:#e2e8f0;--accent:#0f766e;--on:#fff;--soft:#ccfbf1;--in:#15803d;--out:#b91c1c;--tr:#1d4ed8;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1312;--card:#14201f;--text:#e7efee;--muted:#94a3b8;--line:#243534;--accent:#2dd4bf;--on:#06201d;--soft:#123b37;--in:#4ade80;--out:#f87171;--tr:#93c5fd}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px 110px}
+header{padding:max(20px,env(safe-area-inset-top)) 0 4px}
+h1{font-size:22px;margin:0 0 8px}
+.totals{display:flex;flex-wrap:wrap;gap:8px}
+.pill{background:var(--soft);border-radius:999px;padding:4px 12px;font-weight:600;font-variant-numeric:tabular-nums}
+nav{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin:12px 0;position:sticky;top:8px;z-index:2}
+nav button{flex:1;border:0;background:none;color:var(--muted);padding:10px 4px;border-radius:9px;font:inherit;font-weight:600;cursor:pointer}
+nav button.on{background:var(--accent);color:var(--on)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.acc{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer}
+.name{font-weight:650;overflow-wrap:anywhere}
+.sub{color:var(--muted);font-size:13px}
+.bal{font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.neg{color:var(--out)}
+.txn{display:grid;grid-template-columns:1fr auto;gap:2px 12px}
+.txn[data-id]{cursor:pointer}
+.amt{font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.amt.in{color:var(--in)}.amt.out{color:var(--out)}.amt.tr{color:var(--tr)}
+.run{color:var(--muted);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.day{color:var(--muted);font-size:13px;font-weight:600;margin:16px 4px 6px}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+.btn{font:inherit;font-weight:600;border-radius:10px;padding:12px 16px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;width:100%}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on)}
+.btn.danger{color:var(--out)}
+#fab{position:fixed;right:20px;bottom:max(20px,env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;border:0;background:var(--accent);color:var(--on);font-size:32px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
+select,input{font:inherit;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
+#filterAcc{margin-bottom:4px}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:12px 0 4px}
+dialog{border:0;border-radius:18px;padding:20px;width:min(480px,calc(100% - 24px));max-height:calc(100% - 24px);background:var(--card);color:var(--text)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{margin:0;font-size:19px}
+.seg{display:flex;gap:6px;margin-top:14px}
+.seg input{display:none}
+.seg label{flex:1;margin:0;text-align:center;padding:10px 4px;border:1px solid var(--line);border-radius:10px;cursor:pointer;color:var(--text);font-size:15px}
+.seg input:checked+label{background:var(--accent);border-color:var(--accent);color:var(--on)}
+.row{display:flex;gap:8px;margin-top:18px}
+.row>*{flex:1}
+.note{color:var(--muted);font-size:13px;margin:6px 0 12px}
+.err{color:var(--out);font-size:14px;min-height:1.2em;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>My Accounts</h1>
+    <div class="totals" id="totals"></div>
+  </header>
+  <nav>
+    <button data-tab="accounts" class="on">Accounts</button>
+    <button data-tab="txns">Transactions</button>
+    <button data-tab="settings">Backup</button>
+  </nav>
+
+  <section id="tab-accounts"></section>
+
+  <section id="tab-txns" hidden>
+    <select id="filterAcc" aria-label="Filter by account"></select>
+    <div id="txnList"></div>
+  </section>
+
+  <section id="tab-settings" hidden>
+    <div class="card">
+      <div class="name">Backup</div>
+      <p class="note">Your data is stored only on this device, inside this app. Nothing is sent anywhere. Export a backup file regularly, and use it to copy your data to another device.</p>
+      <button class="btn primary" id="exportBtn">Export backup file</button>
+      <div style="height:8px"></div>
+      <button class="btn" id="importBtn">Import backup file</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+    <div class="card">
+      <div class="name">Storage</div>
+      <p class="note" id="storageNote">Checking…</p>
+    </div>
+    <div class="card">
+      <button class="btn danger" id="wipeBtn">Erase all data on this device</button>
+    </div>
+  </section>
+</div>
+
+<button id="fab" aria-label="Add transaction">+</button>
+
+<dialog id="dlgTxn">
+  <form id="formTxn" novalidate onsubmit="return false">
+    <h2 id="txnTitle">New transaction</h2>
+    <div class="seg">
+      <input type="radio" name="type" id="tIn" value="in"><label for="tIn">Income</label>
+      <input type="radio" name="type" id="tOut" value="out" checked><label for="tOut">Expense</label>
+      <input type="radio" name="type" id="tTr" value="tr"><label for="tTr">Transfer</label>
+    </div>
+    <label for="fAcc" id="lblAcc">Account</label>
+    <select id="fAcc"></select>
+    <div id="toWrap" hidden>
+      <label for="fTo">To account</label>
+      <select id="fTo"></select>
+    </div>
+    <label for="fAmt">Amount</label>
+    <input id="fAmt" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+    <label for="fDesc">Description</label>
+    <input id="fDesc" maxlength="120" placeholder="e.g. Salary, Groceries, Rent">
+    <label for="fDate">Date</label>
+    <input id="fDate" type="date">
+    <div class="err" id="txnErr"></div>
+    <div class="row">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="button" class="btn primary" id="txnSave">Save</button>
+    </div>
+    <button type="button" class="btn danger" id="txnDel" style="margin-top:8px" hidden>Delete transaction</button>
+  </form>
+</dialog>
+
+<dialog id="dlgAcc">
+  <form id="formAcc" novalidate onsubmit="return false">
+    <h2 id="accTitle">New account</h2>
+    <label for="aName">Account name</label>
+    <input id="aName" maxlength="40" placeholder="e.g. Monzo, Barclays, Cash">
+    <label for="aCur">Currency symbol</label>
+    <input id="aCur" maxlength="4" value="£">
+    <label for="aOpen">Opening balance</label>
+    <input id="aOpen" type="text" autocomplete="off" placeholder="0.00">
+    <p class="note">Use a negative number for an overdraft or credit card.</p>
+    <div class="err" id="accErr"></div>
+    <div class="row">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="button" class="btn primary" id="accSave">Save</button>
+    </div>
+    <button type="button" class="btn danger" id="accDel" style="margin-top:8px" hidden>Delete account</button>
+  </form>
+</dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const KEY = 'my-accounts-v1';
+let memStore = null;
+function readStore(){ try { return localStorage.getItem(KEY); } catch(e){ return memStore; } }
+function writeStore(v){ try { localStorage.setItem(KEY, v); } catch(e){ memStore = v; } }
+
+let db = (() => {
+  try { const d = JSON.parse(readStore()); if (d && Array.isArray(d.accounts) && Array.isArray(d.txns)) return d; } catch(e){}
+  return { accounts: [], txns: [] };
+})();
+function save(){ writeStore(JSON.stringify(db)); render(); }
+
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Accepts "1250", "1,250.50", "£1,250", "-300", " 12.5 " → whole pence, or NaN if not a number
+function minor(v){
+  const s = String(v).replace(/[\s,£$€₨]/g, '').replace(/^Rs\.?/i, '').replace(/[−–]/g, '-');
+  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Math.round(parseFloat(s) * 100);
+}
+const fmt = (m, cur) => (m < 0 ? '−' : '') + esc(cur) + (Math.abs(m) / 100).toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
+const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
+const niceDate = d => new Date(d + 'T00:00').toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+const accById = id => db.accounts.find(a => a.id === id);
+const byDate = (x, y) => x.date < y.date ? -1 : x.date > y.date ? 1 : x.ts - y.ts;
+
+// How much a transaction changes a given account (in pence)
+function effect(t, id){
+  if (t.type === 'in'  && t.acc === id) return t.amount;
+  if (t.type === 'out' && t.acc === id) return -t.amount;
+  if (t.type === 'tr'){ if (t.acc === id) return -t.amount; if (t.to === id) return t.amount; }
+  return 0;
+}
+const balance = a => db.txns.reduce((s, t) => s + effect(t, a.id), a.opening);
+
+/* ---------- tabs ---------- */
+let tab = 'accounts', filter = '';
+function show(t){
+  tab = t;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  ['accounts','txns','settings'].forEach(x => $('#tab-' + x).hidden = x !== t);
+  $('#fab').hidden = t === 'settings';
+  render();
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => show(b.dataset.tab));
+
+function render(){
+  renderTotals();
+  if (tab === 'accounts') renderAccounts();
+  if (tab === 'txns') renderTxns();
+  if (tab === 'settings') renderSettings();
+}
+
+function renderTotals(){
+  const t = {};
+  db.accounts.forEach(a => t[a.cur] = (t[a.cur] || 0) + balance(a));
+  $('#totals').innerHTML = Object.keys(t).map(c => `<span class="pill">Total ${fmt(t[c], c)}</span>`).join('');
+}
+
+/* ---------- accounts ---------- */
+function renderAccounts(){
+  const el = $('#tab-accounts');
+  let h = db.accounts.length ? '' : `<div class="empty">No accounts yet.<br>Add your first bank account to get started.</div>`;
+  h += db.accounts.map(a => {
+    const b = balance(a);
+    const n = db.txns.filter(t => t.acc === a.id || t.to === a.id).length;
+    return `<div class="card acc" data-id="${a.id}">
+      <div><div class="name">${esc(a.name)}</div>
+      <div class="sub">Opening ${fmt(a.opening, a.cur)} · ${n} transaction${n === 1 ? '' : 's'} · <a href="#" data-edit="${a.id}">Edit</a></div></div>
+      <div class="bal${b < 0 ? ' neg' : ''}">${fmt(b, a.cur)}</div></div>`;
+  }).join('');
+  h += `<button class="btn" id="addAcc">+ Add account</button>`;
+  el.innerHTML = h;
+  $('#addAcc').onclick = () => openAcc();
+  el.querySelectorAll('.acc').forEach(c => c.onclick = e => {
+    const ed = e.target.closest('[data-edit]');
+    if (ed){ e.preventDefault(); openAcc(ed.dataset.edit); return; }
+    filter = c.dataset.id; show('txns');
+  });
+}
+
+/* ---------- transactions ---------- */
+const openingCard = a => `<div class="day">Start</div><div class="card txn"><div class="name">Opening balance</div><div class="amt">${fmt(a.opening, a.cur)}</div></div>`;
+
+function renderTxns(){
+  if (filter && !accById(filter)) filter = '';
+  const sel = $('#filterAcc');
+  sel.innerHTML = `<option value="">All accounts</option>` + db.accounts.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('');
+  sel.value = filter;
+
+  const list = $('#txnList');
+  const a = filter ? accById(filter) : null;
+  let rows = [...db.txns].sort(byDate);
+  let run = null;
+  if (a){
+    rows = rows.filter(t => effect(t, a.id) !== 0);
+    let r = a.opening; run = new Map();
+    rows.forEach(t => { r += effect(t, a.id); run.set(t.id, r); });
+  }
+  rows.reverse();
+
+  if (!rows.length){
+    list.innerHTML = `<div class="empty">${db.accounts.length ? 'No transactions yet. Tap + to add one.' : 'Add an account first.'}</div>` + (a ? openingCard(a) : '');
+    return;
+  }
+  let h = '', last = '';
+  rows.forEach(t => {
+    if (t.date !== last){ h += `<div class="day">${niceDate(t.date)}</div>`; last = t.date; }
+    const from = accById(t.acc), to = accById(t.to), cur = from ? from.cur : '';
+    let sign, cls = t.type, where;
+    if (t.type === 'tr'){
+      where = `${esc(from ? from.name : '?')} → ${esc(to ? to.name : '?')}`;
+      sign = a ? (effect(t, a.id) > 0 ? '+' : '−') : '';
+    } else {
+      where = esc(from ? from.name : '?');
+      sign = t.type === 'in' ? '+' : '−';
+    }
+    const label = t.desc || (t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer');
+    h += `<div class="card txn" data-id="${t.id}">
+      <div class="name">${esc(label)}</div><div class="amt ${cls}">${sign}${fmt(t.amount, cur)}</div>
+      <div class="sub">${where}</div><div class="run">${run ? 'Balance ' + fmt(run.get(t.id), a.cur) : ''}</div></div>`;
+  });
+  if (a) h += openingCard(a);
+  list.innerHTML = h;
+  list.querySelectorAll('.txn[data-id]').forEach(c => c.onclick = () => openTxn(c.dataset.id));
+}
+$('#filterAcc').onchange = e => { filter = e.target.value; renderTxns(); };
+
+/* ---------- transaction dialog ---------- */
+const dT = $('#dlgTxn');
+let editing = null;
+const accOptions = () => db.accounts.map(a => `<option value="${a.id}">${esc(a.name)} (${esc(a.cur)})</option>`).join('');
+const curType = () => dT.querySelector('input[name=type]:checked').value;
+function syncType(){ const tr = curType() === 'tr'; $('#toWrap').hidden = !tr; $('#lblAcc').textContent = tr ? 'From account' : 'Account'; }
+function setType(v){ dT.querySelector(`input[name=type][value="${v}"]`).checked = true; syncType(); }
+dT.querySelectorAll('input[name=type]').forEach(r => r.onchange = syncType);
+
+function openTxn(id){
+  if (!db.accounts.length){ openAcc(); return; }
+  editing = id ? db.txns.find(t => t.id === id) : null;
+  $('#fAcc').innerHTML = accOptions(); $('#fTo').innerHTML = accOptions();
+  $('#txnErr').textContent = '';
+  if (editing){
+    $('#txnTitle').textContent = 'Edit transaction';
+    setType(editing.type);
+    $('#fAcc').value = editing.acc; if (editing.to) $('#fTo').value = editing.to;
+    $('#fAmt').value = (editing.amount / 100).toFixed(2);
+    $('#fDesc').value = editing.desc; $('#fDate').value = editing.date;
+    $('#txnDel').hidden = false;
+  } else {
+    $('#txnTitle').textContent = 'New transaction';
+    setType('out');
+    $('#fAcc').value = filter && accById(filter) ? filter : db.accounts[0].id;
+    $('#fTo').value = (db.accounts.find(a => a.id !== $('#fAcc').value) || db.accounts[0]).id;
+    $('#fAmt').value = ''; $('#fDesc').value = ''; $('#fDate').value = today();
+    $('#txnDel').hidden = true;
+  }
+  dT.showModal();
+  if (!editing) setTimeout(() => $('#fAmt').focus(), 50);
+}
+
+function saveTxn(){
+  const err = m => { $('#txnErr').textContent = m; };
+  const type = curType(), acc = $('#fAcc').value, to = $('#fTo').value;
+  const amount = minor($('#fAmt').value), desc = $('#fDesc').value.trim(), date = $('#fDate').value;
+  if (!(amount > 0)) return err('Enter an amount above 0, e.g. 25 or 1,250.50');
+  if (!date) return err('Pick a date.');
+  if (type === 'tr'){
+    if (acc === to) return err('Choose two different accounts.');
+    if (accById(acc).cur !== accById(to).cur) return err('These accounts use different currencies. Record an expense in one and income in the other instead.');
+  }
+  const t = { type, acc, to: type === 'tr' ? to : null, amount, desc, date };
+  if (editing) Object.assign(editing, t);
+  else db.txns.push({ id: uid(), ts: Date.now(), ...t });
+  dT.close(); save();
+}
+$('#txnSave').onclick = saveTxn;
+$('#txnDel').onclick = () => {
+  if (editing && confirm('Delete this transaction?')){ db.txns = db.txns.filter(t => t !== editing); dT.close(); save(); }
+};
+
+/* ---------- account dialog ---------- */
+const dA = $('#dlgAcc');
+let editingAcc = null;
+function openAcc(id){
+  editingAcc = id ? accById(id) : null;
+  $('#accErr').textContent = '';
+  $('#accTitle').textContent = editingAcc ? 'Edit account' : 'New account';
+  $('#aName').value = editingAcc ? editingAcc.name : '';
+  $('#aCur').value = editingAcc ? editingAcc.cur : (db.accounts[0] ? db.accounts[0].cur : '£');
+  $('#aOpen').value = editingAcc ? (editingAcc.opening / 100).toFixed(2) : '';
+  $('#accDel').hidden = !editingAcc;
+  dA.showModal();
+}
+function saveAcc(){
+  const err = m => { $('#accErr').textContent = m; };
+  const name = $('#aName').value.trim(), cur = $('#aCur').value.trim() || '£', ov = $('#aOpen').value.trim();
+  const opening = ov === '' ? 0 : minor(ov);
+  if (!name) return err('Give the account a name.');
+  if (!Number.isFinite(opening)) return err('Opening balance must be a number, e.g. 1500 or -250.');
+  if (editingAcc) Object.assign(editingAcc, { name, cur, opening });
+  else db.accounts.push({ id: uid(), name, cur, opening, created: today() });
+  dA.close(); save();
+}
+$('#accSave').onclick = saveAcc;
+$('#accDel').onclick = () => {
+  const a = editingAcc; if (!a) return;
+  const n = db.txns.filter(t => t.acc === a.id || t.to === a.id).length;
+  if (!confirm(`Delete "${a.name}"${n ? ` and its ${n} transaction${n === 1 ? '' : 's'}` : ''}? This can't be undone.`)) return;
+  db.accounts = db.accounts.filter(x => x !== a);
+  db.txns = db.txns.filter(t => t.acc !== a.id && t.to !== a.id);
+  dA.close(); save();
+};
+
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());
+$('#fab').onclick = () => openTxn();
+// Pressing Enter in a text box saves, like a normal form
+dT.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); saveTxn(); } });
+dA.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); saveAcc(); } });
+
+/* ---------- backup ---------- */
+function renderSettings(){
+  const n = $('#storageNote');
+  const s = `${db.accounts.length} account${db.accounts.length === 1 ? '' : 's'} and ${db.txns.length} transaction${db.txns.length === 1 ? '' : 's'} stored on this device.`;
+  n.textContent = s;
+  if (navigator.storage && navigator.storage.persisted){
+    navigator.storage.persisted().then(p => {
+      n.textContent = s + (p ? ' Storage is protected from automatic clean-up.' : ' Install this app to your home screen so the browser keeps your data safe.');
+    }).catch(() => {});
+  }
+}
+$('#exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify({ app: 'my-accounts', version: 1, exported: new Date().toISOString(), ...db }, null, 2)], { type: 'application/json' });
+  const u = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = u; a.download = `accounts-backup-${today()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 2000);
+};
+$('#importBtn').onclick = () => $('#importFile').click();
+$('#importFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!Array.isArray(d.accounts) || !Array.isArray(d.txns)) throw 0;
+    if (!confirm(`Replace the data on this device with this backup (${d.accounts.length} accounts, ${d.txns.length} transactions)?`)) return;
+    db = { accounts: d.accounts, txns: d.txns }; save(); alert('Backup imported.');
+  } catch(_) { alert("That file isn't a valid backup."); }
+};
+$('#wipeBtn').onclick = () => {
+  if (confirm('Erase all accounts and transactions on this device? Export a backup first if you might need them.') && confirm('Are you sure? This cannot be undone.')){
+    db = { accounts: [], txns: [] }; save();
+  }
+};
+
+/* ---------- offline + persistence ---------- */
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch(e){}
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+show('accounts');
+</script>
+</body>
+</html>

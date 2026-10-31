@@ -4,98 +4,258 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>My Accounts</title>
-<meta name="theme-color" content="#0f766e">
+<meta name="theme-color" content="#f2f2f2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Accounts">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<script>
+  // Apply the saved theme before the page paints (avoids a flash of the wrong colours)
+  try { var t = (JSON.parse(localStorage.getItem('my-accounts-settings')) || {}).theme;
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
 <style>
-:root{--bg:#f4f6f6;--card:#fff;--text:#14201f;--muted:#64748b;--line:#e2e8f0;--accent:#0f766e;--on:#fff;--soft:#ccfbf1;--in:#15803d;--out:#b91c1c;--tr:#1d4ed8;color-scheme:light dark}
-@media (prefers-color-scheme:dark){:root{--bg:#0b1312;--card:#14201f;--text:#e7efee;--muted:#94a3b8;--line:#243534;--accent:#2dd4bf;--on:#06201d;--soft:#123b37;--in:#4ade80;--out:#f87171;--tr:#93c5fd}}
+/* ---------- Themes: Graphite Mono (light) · Plum Night (dark) ---------- */
+:root{
+  --bg:#f2f2f2;--card:#fff;--text:#111;--muted:#737373;--line:#e5e5e5;--soft:#f4f4f5;
+  --acc:#111;--acc2:#3f3f46;--on:#fff;
+  --in:#16a34a;--out:#dc2626;--tr:#2563eb;--inbg:#dcfce7;--outbg:#fee2e2;--trbg:#dbeafe;
+  --shadow:0 6px 16px rgba(0,0,0,.18);
+  --sp1:#27272a;--sp2:#000;--splogo:#fff;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]){
+    --bg:#140e1a;--card:#1f1627;--text:#f3e8f5;--muted:#a593ad;--line:#33253d;--soft:#2a1f33;
+    --acc:#e879a6;--acc2:#a855f7;--on:#1a0b14;
+    --in:#5eead4;--out:#fb7185;--tr:#93c5fd;--inbg:#123b37;--outbg:#3b1621;--trbg:#1e2a4a;
+    --shadow:0 6px 18px rgba(0,0,0,.5);
+    --sp1:#3a1d48;--sp2:#140e1a;--splogo:#e879a6;
+    color-scheme:dark;
+  }
+}
+:root[data-theme=dark]{
+  --bg:#140e1a;--card:#1f1627;--text:#f3e8f5;--muted:#a593ad;--line:#33253d;--soft:#2a1f33;
+  --acc:#e879a6;--acc2:#a855f7;--on:#1a0b14;
+  --in:#5eead4;--out:#fb7185;--tr:#93c5fd;--inbg:#123b37;--outbg:#3b1621;--trbg:#1e2a4a;
+  --shadow:0 6px 18px rgba(0,0,0,.5);
+  --sp1:#3a1d48;--sp2:#140e1a;--splogo:#e879a6;
+  color-scheme:dark;
+}
+
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-a{color:var(--accent)}
-.wrap{max-width:640px;margin:0 auto;padding:0 16px 110px}
-header{padding:max(20px,env(safe-area-inset-top)) 0 4px}
-h1{font-size:22px;margin:0 0 8px}
-.totals{display:flex;flex-wrap:wrap;gap:8px}
-.pill{background:var(--soft);border-radius:999px;padding:4px 12px;font-weight:600;font-variant-numeric:tabular-nums}
-nav{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin:12px 0;position:sticky;top:8px;z-index:2}
-nav button{flex:1;border:0;background:none;color:var(--muted);padding:10px 4px;border-radius:9px;font:inherit;font-weight:600;cursor:pointer}
-nav button.on{background:var(--accent);color:var(--on)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
-.acc{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer}
-.name{font-weight:650;overflow-wrap:anywhere}
-.sub{color:var(--muted);font-size:13px}
-.bal{font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.neg{color:var(--out)}
-.txn{display:grid;grid-template-columns:1fr auto;gap:2px 12px}
-.txn[data-id]{cursor:pointer}
-.amt{font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.amt.in{color:var(--in)}.amt.out{color:var(--out)}.amt.tr{color:var(--tr)}
-.run{color:var(--muted);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.day{color:var(--muted);font-size:13px;font-weight:600;margin:16px 4px 6px}
-.empty{text-align:center;color:var(--muted);padding:40px 16px}
-.btn{font:inherit;font-weight:600;border-radius:10px;padding:12px 16px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;width:100%}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on)}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+a{color:var(--acc);cursor:pointer;font-weight:600;text-decoration:none}
+[hidden]{display:none!important}
+svg{display:block}
+
+/* ---------- Splash ---------- */
+#splash{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,var(--sp1),var(--sp2));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s ease}
+#splash.out{opacity:0;pointer-events:none}
+#splash .logo{width:96px;height:96px;border-radius:28px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;font-size:40px;font-weight:800;color:var(--splogo);animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
+#splash .nm{font-size:30px;font-weight:800;letter-spacing:-.5px}
+#splash .tg{opacity:.75;font-size:15px}
+#splash .ft{position:absolute;bottom:max(40px,env(safe-area-inset-bottom));font-size:12px;opacity:.6}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- Layout ---------- */
+.app{max-width:720px;margin:0 auto}
+main{padding:0 16px calc(100px + env(safe-area-inset-bottom))}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:max(18px,env(safe-area-inset-top)) 2px 14px}
+.top .sm{font-size:13px;color:var(--muted)}
+.top h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.3px}
+.iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--muted);display:grid;place-items:center;cursor:pointer;flex:none}
+
+.side{display:none}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;padding:6px 6px max(8px,env(safe-area-inset-bottom))}
+.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;padding:4px 8px;min-width:60px}
+.tab.on{color:var(--acc)}
+.tab svg{width:22px;height:22px}
+.plus{width:52px;height:52px;border-radius:18px;border:0;background:var(--acc);color:var(--on);display:grid;place-items:center;margin-top:-26px;box-shadow:var(--shadow);cursor:pointer}
+.plus svg{width:26px;height:26px}
+
+@media (min-width:900px){
+  .tabs{display:none}
+  .app{max-width:none;display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+  .side{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;padding:24px 16px;background:var(--card);border-right:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;padding:0 10px 22px}
+  .brand i{width:34px;height:34px;border-radius:10px;background:var(--acc);color:var(--on);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:14px}
+  .nav{border:0;background:none;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-weight:600;color:var(--muted);cursor:pointer;text-align:left}
+  .nav svg{width:20px;height:20px}
+  .nav:hover{background:var(--soft)}
+  .nav.on{background:var(--soft);color:var(--text)}
+  .side .btn{margin-top:auto}
+  main{padding:8px 40px 60px;max-width:820px;width:100%}
+}
+
+/* ---------- Building blocks ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px}
+.pad{padding:14px 16px}
+.hero{position:relative;border-radius:22px;padding:18px 20px 18px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:var(--on);overflow:hidden}
+.hero .k{font-size:13px;opacity:.85;font-weight:500}
+.hero .v{font-size:32px;font-weight:800;letter-spacing:-.5px;margin-top:2px;font-variant-numeric:tabular-nums}
+.hero .o{font-size:14px;font-weight:700;opacity:.9;font-variant-numeric:tabular-nums}
+.hero .s{font-size:13px;opacity:.85;margin-top:8px}
+.hero .eye{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:inherit;display:grid;place-items:center;cursor:pointer}
+.hidden-val{letter-spacing:2px}
+.qa{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.qa button{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:12px 4px;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}
+.qa b,.tic{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;flex:none}
+.qa svg,.tic svg{width:18px;height:18px}
+.c-in{background:var(--inbg);color:var(--in)}.c-out{background:var(--outbg);color:var(--out)}.c-tr{background:var(--trbg);color:var(--tr)}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:20px 4px 8px;font-weight:700;font-size:15px}
+.sec a{font-size:14px}
+.list{padding:2px 14px}
+.li{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.li:last-child{border-bottom:0}
+.li-main{min-width:0;flex:1}
+.dot{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;flex:none}
+.nm{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sm{font-size:12.5px;color:var(--muted)}
+.amt{font-weight:700;font-size:15px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.amt .sm{font-weight:500}
+.in{color:var(--in)}.out{color:var(--out)}.tr{color:var(--tr)}
+.day{color:var(--muted);font-size:13px;font-weight:600;margin:18px 6px 6px}
+.empty{text-align:center;color:var(--muted);padding:36px 16px}
+.welcome{text-align:center;padding:32px 20px;margin-top:8px}
+.welcome .wl{width:72px;height:72px;margin:0 auto 14px;border-radius:22px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:var(--on);display:grid;place-items:center;font-size:28px;font-weight:800}
+.welcome h2{margin:0 0 6px}
+.welcome p{color:var(--muted);margin:0 0 18px}
+.banner{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--soft);font-size:14px}
+.banner a{margin-left:auto;white-space:nowrap}
+.editbtn{border:0;background:var(--soft);color:var(--muted);width:34px;height:34px;border-radius:10px;display:grid;place-items:center;cursor:pointer;flex:none}
+.editbtn svg{width:16px;height:16px}
+.filters{display:flex;gap:8px;margin-bottom:4px}
+.filters>*{flex:1;min-width:0}
+
+.btn{font-weight:600;border-radius:12px;padding:12px 16px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;width:100%}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:var(--on)}
 .btn.danger{color:var(--out)}
-#fab{position:fixed;right:20px;bottom:max(20px,env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;border:0;background:var(--accent);color:var(--on);font-size:32px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
-select,input{font:inherit;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
-#filterAcc{margin-bottom:4px}
-label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:12px 0 4px}
-dialog{border:0;border-radius:18px;padding:20px;width:min(480px,calc(100% - 24px));max-height:calc(100% - 24px);background:var(--card);color:var(--text)}
-dialog::backdrop{background:rgba(0,0,0,.45)}
-dialog h2{margin:0;font-size:19px}
-.seg{display:flex;gap:6px;margin-top:14px}
+select,input[type=text],input[type=date],input:not([type]){font:inherit;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);outline:none}
+select:focus,input:focus{border-color:var(--acc)}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 5px}
+
+/* settings */
+.set{margin-bottom:12px}
+.set h3{margin:0 0 4px;font-size:16px}
+.set p{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+.seg{display:flex;gap:6px}
 .seg input{display:none}
-.seg label{flex:1;margin:0;text-align:center;padding:10px 4px;border:1px solid var(--line);border-radius:10px;cursor:pointer;color:var(--text);font-size:15px}
-.seg input:checked+label{background:var(--accent);border-color:var(--accent);color:var(--on)}
-.row{display:flex;gap:8px;margin-top:18px}
+.seg label{flex:1;margin:0;text-align:center;padding:10px 4px;border:1px solid var(--line);border-radius:12px;cursor:pointer;font-size:14px;font-weight:600}
+.seg input:checked+label{background:var(--acc);border-color:var(--acc);color:var(--on)}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
+.switch input{display:none}
+.switch i{width:48px;height:28px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.switch input:checked+i{background:var(--acc)}
+.switch input:checked+i::after{transform:translateX(20px)}
+.colors{display:flex;flex-wrap:wrap;gap:10px}
+.colors input{display:none}
+.colors label{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:0}
+.colors input:checked+label{border-color:var(--text);box-shadow:inset 0 0 0 3px var(--card)}
+
+dialog{border:0;border-radius:22px;padding:20px;width:min(480px,calc(100% - 24px));max-height:calc(100% - 24px);background:var(--card);color:var(--text)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog h2{margin:0;font-size:20px}
+dialog .seg{margin-top:14px}
+.row{display:flex;gap:8px;margin-top:20px}
 .row>*{flex:1}
-.note{color:var(--muted);font-size:13px;margin:6px 0 12px}
-.err{color:var(--out);font-size:14px;min-height:1.2em;margin-top:8px}
+.note{color:var(--muted);font-size:13px;margin:6px 0 0}
+.err{color:var(--out);font-size:14px;min-height:1.2em;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:50;box-shadow:var(--shadow)}
+@media (min-width:900px){.toast{bottom:32px}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>My Accounts</h1>
-    <div class="totals" id="totals"></div>
-  </header>
-  <nav>
-    <button data-tab="accounts" class="on">Accounts</button>
-    <button data-tab="txns">Transactions</button>
-    <button data-tab="settings">Backup</button>
-  </nav>
 
-  <section id="tab-accounts"></section>
-
-  <section id="tab-txns" hidden>
-    <select id="filterAcc" aria-label="Filter by account"></select>
-    <div id="txnList"></div>
-  </section>
-
-  <section id="tab-settings" hidden>
-    <div class="card">
-      <div class="name">Backup</div>
-      <p class="note">Your data is stored only on this device, inside this app. Nothing is sent anywhere. Export a backup file regularly, and use it to copy your data to another device.</p>
-      <button class="btn primary" id="exportBtn">Export backup file</button>
-      <div style="height:8px"></div>
-      <button class="btn" id="importBtn">Import backup file</button>
-      <input type="file" id="importFile" accept=".json,application/json" hidden>
-    </div>
-    <div class="card">
-      <div class="name">Storage</div>
-      <p class="note" id="storageNote">Checking…</p>
-    </div>
-    <div class="card">
-      <button class="btn danger" id="wipeBtn">Erase all data on this device</button>
-    </div>
-  </section>
+<div id="splash">
+  <div class="logo">Rs</div>
+  <div class="nm">My Accounts</div>
+  <div class="tg">Your money. Your device.</div>
+  <div class="ft">🔒 Offline · Private · Yours</div>
 </div>
 
-<button id="fab" aria-label="Add transaction">+</button>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><i>Rs</i>My Accounts</div>
+    <button class="nav" data-page="home"><span data-icon="home"></span>Home</button>
+    <button class="nav" data-page="accounts"><span data-icon="wallet"></span>Accounts</button>
+    <button class="nav" data-page="activity"><span data-icon="list"></span>Activity</button>
+    <button class="nav" data-page="settings"><span data-icon="gear"></span>Settings</button>
+    <button class="btn primary" data-act="add">+ Add transaction</button>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div><div class="sm" id="greet"></div><h1 id="title">My Accounts</h1></div>
+      <button class="iconbtn" id="topEye" data-act="eye" aria-label="Show or hide balances"></button>
+    </div>
+
+    <section id="pg-home"></section>
+
+    <section id="pg-accounts" hidden></section>
+
+    <section id="pg-activity" hidden>
+      <div class="filters">
+        <input type="text" id="search" placeholder="Search descriptions" autocomplete="off">
+        <select id="filterAcc" aria-label="Filter by account"></select>
+      </div>
+      <div id="txnList"></div>
+    </section>
+
+    <section id="pg-settings" hidden>
+      <div class="card pad set">
+        <h3>Appearance</h3>
+        <p>Light uses Graphite Mono, dark uses Plum Night.</p>
+        <div class="seg">
+          <input type="radio" name="theme" id="thS" value="system"><label for="thS">Auto</label>
+          <input type="radio" name="theme" id="thL" value="light"><label for="thL">Light</label>
+          <input type="radio" name="theme" id="thD" value="dark"><label for="thD">Dark</label>
+        </div>
+      </div>
+      <div class="card pad set">
+        <h3>Currency</h3>
+        <p>Used for new accounts. Changing it only changes the label, it doesn't convert any amounts.</p>
+        <div class="filters"><input type="text" id="defCur" maxlength="4" autocomplete="off"><button class="btn" id="applyCur" style="flex:1.4">Apply to all accounts</button></div>
+      </div>
+      <div class="card pad set">
+        <h3>Privacy</h3>
+        <label class="switch"><span><b style="font-weight:600">Hide balances when the app opens</b><br><span class="sm">Tap the eye icon any time to show or hide.</span></span><input type="checkbox" id="hideOnOpen"><i></i></label>
+      </div>
+      <div class="card pad set">
+        <h3>Your name</h3>
+        <p>Optional. Used for the greeting on the home screen.</p>
+        <input type="text" id="userName" maxlength="30" placeholder="e.g. Haqeeq" autocomplete="off">
+      </div>
+      <div class="card pad set">
+        <h3>Backup</h3>
+        <p>Your data is stored only on this device. Export a backup file regularly, and use it to copy your data to another device. <span id="lastBackup"></span></p>
+        <button class="btn primary" data-act="export">Export backup file</button>
+        <div style="height:8px"></div>
+        <button class="btn" id="importBtn">Import backup file</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </div>
+      <div class="card pad set">
+        <h3>Storage</h3>
+        <p id="storageNote" style="margin:0">Checking…</p>
+      </div>
+      <div class="card pad set">
+        <button class="btn danger" id="wipeBtn">Erase all data on this device</button>
+      </div>
+      <p class="sm" style="text-align:center;margin:18px 0">My Accounts · version <span id="ver"></span></p>
+    </section>
+  </main>
+</div>
+
+<nav class="tabs">
+  <button class="tab" data-page="home"><span data-icon="home"></span>Home</button>
+  <button class="tab" data-page="accounts"><span data-icon="wallet"></span>Accounts</button>
+  <button class="plus" data-act="add" aria-label="Add transaction"><span data-icon="plus"></span></button>
+  <button class="tab" data-page="activity"><span data-icon="list"></span>Activity</button>
+  <button class="tab" data-page="settings"><span data-icon="gear"></span>Settings</button>
+</nav>
 
 <dialog id="dlgTxn">
   <form id="formTxn" novalidate onsubmit="return false">
@@ -105,17 +265,17 @@ dialog h2{margin:0;font-size:19px}
       <input type="radio" name="type" id="tOut" value="out" checked><label for="tOut">Expense</label>
       <input type="radio" name="type" id="tTr" value="tr"><label for="tTr">Transfer</label>
     </div>
-    <label for="fAcc" id="lblAcc">Account</label>
+    <label class="f" for="fAcc" id="lblAcc">Account</label>
     <select id="fAcc"></select>
     <div id="toWrap" hidden>
-      <label for="fTo">To account</label>
+      <label class="f" for="fTo">To account</label>
       <select id="fTo"></select>
     </div>
-    <label for="fAmt">Amount</label>
+    <label class="f" for="fAmt">Amount</label>
     <input id="fAmt" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
-    <label for="fDesc">Description</label>
-    <input id="fDesc" maxlength="120" placeholder="e.g. Salary, Groceries, Rent">
-    <label for="fDate">Date</label>
+    <label class="f" for="fDesc">Description</label>
+    <input id="fDesc" type="text" maxlength="120" placeholder="e.g. Salary, Groceries, Rent" autocomplete="off">
+    <label class="f" for="fDate">Date</label>
     <input id="fDate" type="date">
     <div class="err" id="txnErr"></div>
     <div class="row">
@@ -129,11 +289,13 @@ dialog h2{margin:0;font-size:19px}
 <dialog id="dlgAcc">
   <form id="formAcc" novalidate onsubmit="return false">
     <h2 id="accTitle">New account</h2>
-    <label for="aName">Account name</label>
-    <input id="aName" maxlength="40" placeholder="e.g. Monzo, Barclays, Cash">
-    <label for="aCur">Currency symbol</label>
-    <input id="aCur" maxlength="4" value="£">
-    <label for="aOpen">Opening balance</label>
+    <label class="f" for="aName">Account name</label>
+    <input id="aName" type="text" maxlength="40" placeholder="e.g. Monzo, Barclays, Cash" autocomplete="off">
+    <label class="f">Colour</label>
+    <div class="colors" id="aColors"></div>
+    <label class="f" for="aCur">Currency symbol</label>
+    <input id="aCur" type="text" maxlength="4" value="Rs" autocomplete="off">
+    <label class="f" for="aOpen">Opening balance</label>
     <input id="aOpen" type="text" autocomplete="off" placeholder="0.00">
     <p class="note">Use a negative number for an overdraft or credit card.</p>
     <div class="err" id="accErr"></div>
@@ -146,33 +308,67 @@ dialog h2{margin:0;font-size:19px}
 </dialog>
 
 <script>
-const $ = s => document.querySelector(s);
-const KEY = 'my-accounts-v1';
-let memStore = null;
-function readStore(){ try { return localStorage.getItem(KEY); } catch(e){ return memStore; } }
-function writeStore(v){ try { localStorage.setItem(KEY, v); } catch(e){ memStore = v; } }
+const VERSION = '1.2';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 
+/* ---------- Icons ---------- */
+const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const I = {
+  home: svg('<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'),
+  wallet: svg('<rect x="3" y="6" width="18" height="14" rx="3"/><path d="M16 13h2M3 10h18"/>'),
+  list: svg('<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>'),
+  gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+  plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  eye: svg('<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'),
+  eyeoff: svg('<path d="M17.9 17.9A10 10 0 0 1 12 20C5 20 1 12 1 12a18 18 0 0 1 5.1-5.9M9.9 4.2A9 9 0 0 1 12 4c7 0 11 8 11 8a18 18 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2M1 1l22 22"/>'),
+  in: svg('<path d="M12 5v14M5 12l7 7 7-7"/>'),
+  out: svg('<path d="M12 19V5M5 12l7-7 7 7"/>'),
+  tr: svg('<path d="M7 7h13l-4-4M17 17H4l4 4"/>'),
+  edit: svg('<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
+  save: svg('<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>')
+};
+$$('[data-icon]').forEach(el => el.outerHTML = I[el.dataset.icon]);
+
+/* ---------- Storage ---------- */
+const KEY = 'my-accounts-v1', SKEY = 'my-accounts-settings';   // same data key as v1.0, so existing data carries over
+const mem = {};
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return mem[k] ?? null; } },
+  set(k, v){ try { localStorage.setItem(k, v); } catch(e){ mem[k] = v; } }
+};
 let db = (() => {
-  try { const d = JSON.parse(readStore()); if (d && Array.isArray(d.accounts) && Array.isArray(d.txns)) return d; } catch(e){}
+  try { const d = JSON.parse(store.get(KEY)); if (d && Array.isArray(d.accounts) && Array.isArray(d.txns)) return d; } catch(e){}
   return { accounts: [], txns: [] };
 })();
-function save(){ writeStore(JSON.stringify(db)); render(); }
+let cfg = Object.assign({ theme: 'system', hideOnOpen: true, name: '', lastBackup: null, currency: 'Rs' },
+  (() => { try { return JSON.parse(store.get(SKEY)) || {}; } catch(e){ return {}; } })());
+function save(){ store.set(KEY, JSON.stringify(db)); render(); }
+function saveCfg(){ store.set(SKEY, JSON.stringify(cfg)); }
+let hidden = !!cfg.hideOnOpen;
 
+/* ---------- Helpers ---------- */
+const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#64748b'];
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-// Accepts "1250", "1,250.50", "£1,250", "-300", " 12.5 " → whole pence, or NaN if not a number
-function minor(v){
+function minor(v){   // "1250", "1,250.50", "£1,250", "-300" → whole pence, or NaN
   const s = String(v).replace(/[\s,£$€₨]/g, '').replace(/^Rs\.?/i, '').replace(/[−–]/g, '-');
   if (!/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
   return Math.round(parseFloat(s) * 100);
 }
-const fmt = (m, cur) => (m < 0 ? '−' : '') + esc(cur) + (Math.abs(m) / 100).toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
+const sym = cur => /[A-Za-z.]$/.test(cur) ? cur + ' ' : cur;   // "Rs 1,250.00" but "£1,250.00"
+const fmt = (m, cur) => (m < 0 ? '−' : '') + esc(sym(cur)) + (Math.abs(m) / 100).toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
+const money = (m, cur) => hidden ? `<span class="hidden-val">${esc(cur)} ••••</span>` : fmt(m, cur);
 const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
 const niceDate = d => new Date(d + 'T00:00').toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+const shortDate = d => { const t = today(), y = new Date(Date.now() - 864e5); const ys = new Date(y - y.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  return d === t ? 'Today' : d === ys ? 'Yesterday' : new Date(d + 'T00:00').toLocaleDateString('en-GB', {day:'numeric', month:'short'}); };
+const daysSince = d => Math.floor((new Date(today()) - new Date(d)) / 864e5);
 const accById = id => db.accounts.find(a => a.id === id);
+const colorOf = a => a.color || COLORS[Math.max(0, db.accounts.indexOf(a)) % COLORS.length];
+const initial = a => (Array.from(a.name.trim())[0] || '?').toUpperCase();
 const byDate = (x, y) => x.date < y.date ? -1 : x.date > y.date ? 1 : x.ts - y.ts;
+const countFor = a => db.txns.filter(t => t.acc === a.id || t.to === a.id).length;
 
-// How much a transaction changes a given account (in pence)
 function effect(t, id){
   if (t.type === 'in'  && t.acc === id) return t.amount;
   if (t.type === 'out' && t.acc === id) return -t.amount;
@@ -180,101 +376,215 @@ function effect(t, id){
   return 0;
 }
 const balance = a => db.txns.reduce((s, t) => s + effect(t, a.id), a.opening);
+function totals(){ const t = {}; db.accounts.forEach(a => t[a.cur] = (t[a.cur] || 0) + balance(a)); return t; }
 
-/* ---------- tabs ---------- */
-let tab = 'accounts', filter = '';
-function show(t){
-  tab = t;
-  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
-  ['accounts','txns','settings'].forEach(x => $('#tab-' + x).hidden = x !== t);
-  $('#fab').hidden = t === 'settings';
-  render();
+function toast(msg){
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
 }
-document.querySelectorAll('nav button').forEach(b => b.onclick = () => show(b.dataset.tab));
+
+/* ---------- Theme ---------- */
+const darkMQ = matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(){
+  const r = document.documentElement;
+  if (cfg.theme === 'light' || cfg.theme === 'dark') r.dataset.theme = cfg.theme; else delete r.dataset.theme;
+  const dark = cfg.theme === 'dark' || (cfg.theme === 'system' && darkMQ.matches);
+  $('meta[name=theme-color]').content = dark ? '#140e1a' : '#f2f2f2';
+}
+darkMQ.addEventListener ? darkMQ.addEventListener('change', applyTheme) : darkMQ.addListener(applyTheme);
+
+/* ---------- Navigation ---------- */
+let page = 'home', filter = '', query = '';
+const TITLES = { home: 'My Accounts', accounts: 'Accounts', activity: 'Activity', settings: 'Settings' };
+function go(p){
+  page = p;
+  $$('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === p));
+  ['home','accounts','activity','settings'].forEach(x => $('#pg-' + x).hidden = x !== p);
+  render(); window.scrollTo(0, 0);
+}
 
 function render(){
-  renderTotals();
-  if (tab === 'accounts') renderAccounts();
-  if (tab === 'txns') renderTxns();
-  if (tab === 'settings') renderSettings();
+  const h = new Date().getHours();
+  const g = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  $('#greet').textContent = page === 'home' ? (cfg.name ? `${g}, ${cfg.name}` : g) : '';
+  $('#greet').hidden = page !== 'home';
+  $('#title').textContent = TITLES[page];
+  $('#topEye').innerHTML = hidden ? I.eyeoff : I.eye;
+  $('#topEye').hidden = page === 'settings' || (page === 'home' && db.accounts.length > 0);
+  if (page === 'home') renderHome();
+  if (page === 'accounts') renderAccounts();
+  if (page === 'activity') renderActivity();
+  if (page === 'settings') renderSettings();
 }
 
-function renderTotals(){
-  const t = {};
-  db.accounts.forEach(a => t[a.cur] = (t[a.cur] || 0) + balance(a));
-  $('#totals').innerHTML = Object.keys(t).map(c => `<span class="pill">Total ${fmt(t[c], c)}</span>`).join('');
+/* ---------- Rows ---------- */
+function accRow(a, withEdit){
+  const b = balance(a), n = countFor(a);
+  return `<div class="li" data-acc="${a.id}">
+    <div class="dot" style="background:${colorOf(a)}">${esc(initial(a))}</div>
+    <div class="li-main"><div class="nm">${esc(a.name)}</div><div class="sm">${withEdit ? 'Opening ' + money(a.opening, a.cur) + ' · ' : ''}${n} transaction${n === 1 ? '' : 's'}</div></div>
+    <div class="amt ${b < 0 && !hidden ? 'out' : ''}">${money(b, a.cur)}</div>
+    ${withEdit ? `<button class="editbtn" data-edit-acc="${a.id}" aria-label="Edit ${esc(a.name)}">${I.edit}</button>` : ''}
+  </div>`;
+}
+function txRow(t, acc, run){
+  const from = accById(t.acc), to = accById(t.to), cur = from ? from.cur : '';
+  let sign = t.type === 'in' ? '+' : t.type === 'out' ? '−' : '';
+  if (t.type === 'tr' && acc) sign = effect(t, acc.id) > 0 ? '+' : '−';
+  const where = t.type === 'tr' ? `${esc(from ? from.name : '?')} → ${esc(to ? to.name : '?')}` : esc(from ? from.name : '?');
+  const label = t.desc || (t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer');
+  const amount = hidden ? money(0, cur) : sign + fmt(t.amount, cur);
+  return `<div class="li" data-tx="${t.id}">
+    <div class="tic c-${t.type}">${I[t.type]}</div>
+    <div class="li-main"><div class="nm">${esc(label)}</div><div class="sm">${where}${acc ? '' : ' · ' + shortDate(t.date)}</div></div>
+    <div class="amt ${hidden ? '' : t.type}">${amount}${run !== undefined ? `<div class="sm">Bal ${money(run, acc.cur)}</div>` : ''}</div>
+  </div>`;
 }
 
-/* ---------- accounts ---------- */
-function renderAccounts(){
-  const el = $('#tab-accounts');
-  let h = db.accounts.length ? '' : `<div class="empty">No accounts yet.<br>Add your first bank account to get started.</div>`;
-  h += db.accounts.map(a => {
-    const b = balance(a);
-    const n = db.txns.filter(t => t.acc === a.id || t.to === a.id).length;
-    return `<div class="card acc" data-id="${a.id}">
-      <div><div class="name">${esc(a.name)}</div>
-      <div class="sub">Opening ${fmt(a.opening, a.cur)} · ${n} transaction${n === 1 ? '' : 's'} · <a href="#" data-edit="${a.id}">Edit</a></div></div>
-      <div class="bal${b < 0 ? ' neg' : ''}">${fmt(b, a.cur)}</div></div>`;
-  }).join('');
-  h += `<button class="btn" id="addAcc">+ Add account</button>`;
-  el.innerHTML = h;
-  $('#addAcc').onclick = () => openAcc();
-  el.querySelectorAll('.acc').forEach(c => c.onclick = e => {
-    const ed = e.target.closest('[data-edit]');
-    if (ed){ e.preventDefault(); openAcc(ed.dataset.edit); return; }
-    filter = c.dataset.id; show('txns');
+/* ---------- Home ---------- */
+function renderHome(){
+  const el = $('#pg-home');
+  if (!db.accounts.length){
+    el.innerHTML = `<div class="card welcome"><div class="wl">Rs</div><h2>Welcome</h2>
+      <p>Add your bank accounts, cash or cards with their current balance to get started.</p>
+      <button class="btn primary" data-act="addAcc">Add your first account</button></div>`;
+    return;
+  }
+  const tot = totals(), curs = Object.keys(tot), main = db.accounts[0].cur;
+  const others = curs.filter(c => c !== main);
+  const month = today().slice(0, 7);
+  let inM = 0, outM = 0;
+  db.txns.forEach(t => {
+    if (t.date.slice(0, 7) !== month) return;
+    const a = accById(t.acc); if (!a || a.cur !== main) return;
+    if (t.type === 'in') inM += t.amount; if (t.type === 'out') outM += t.amount;
   });
+  const monthName = new Date().toLocaleDateString('en-GB', {month: 'long'});
+  const recent = [...db.txns].sort(byDate).reverse().slice(0, 5);
+
+  let backup = '';
+  if (db.txns.length >= 5 && (!cfg.lastBackup || daysSince(cfg.lastBackup) >= 14)){
+    backup = `<div class="banner">${I.save}<span>${cfg.lastBackup ? `Last backup ${daysSince(cfg.lastBackup)} days ago` : 'No backup yet'}</span><a data-act="export">Back up now</a></div>`;
+  }
+
+  el.innerHTML = `
+    <div class="hero">
+      <div class="k">Total balance</div>
+      <div class="v">${money(tot[main], main)}</div>
+      ${others.map(c => `<div class="o">+ ${money(tot[c], c)}</div>`).join('')}
+      <div class="s">${hidden ? 'Tap the eye to show' : `${monthName}: ${inM ? '+' : ''}${fmt(inM, main)} in · ${outM ? '−' : ''}${fmt(outM, main)} out`}</div>
+      <button class="eye" data-act="eye" aria-label="Show or hide balances">${hidden ? I.eyeoff : I.eye}</button>
+    </div>
+    <div class="qa">
+      <button data-act="in"><b class="c-in">${I.in}</b>Income</button>
+      <button data-act="out"><b class="c-out">${I.out}</b>Expense</button>
+      <button data-act="tr"><b class="c-tr">${I.tr}</b>Transfer</button>
+    </div>
+    ${backup}
+    <div class="sec">Accounts <a data-act="addAcc">+ Add</a></div>
+    <div class="card list">${db.accounts.map(a => accRow(a)).join('')}</div>
+    <div class="sec">Recent <a data-page="activity">See all</a></div>
+    ${recent.length ? `<div class="card list">${recent.map(t => txRow(t)).join('')}</div>` : `<div class="card empty">No transactions yet. Tap Income or Expense to add one.</div>`}`;
 }
 
-/* ---------- transactions ---------- */
-const openingCard = a => `<div class="day">Start</div><div class="card txn"><div class="name">Opening balance</div><div class="amt">${fmt(a.opening, a.cur)}</div></div>`;
+/* ---------- Accounts ---------- */
+function renderAccounts(){
+  $('#pg-accounts').innerHTML =
+    (db.accounts.length ? `<div class="card list">${db.accounts.map(a => accRow(a, true)).join('')}</div>` : `<div class="card empty">No accounts yet.</div>`) +
+    `<div style="height:12px"></div><button class="btn" data-act="addAcc">+ Add account</button>`;
+}
 
-function renderTxns(){
+/* ---------- Activity ---------- */
+function renderActivity(){
   if (filter && !accById(filter)) filter = '';
   const sel = $('#filterAcc');
   sel.innerHTML = `<option value="">All accounts</option>` + db.accounts.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('');
   sel.value = filter;
-
+  renderTxnList();
+}
+function renderTxnList(){
   const list = $('#txnList');
   const a = filter ? accById(filter) : null;
-  let rows = [...db.txns].sort(byDate);
-  let run = null;
+  let rows = [...db.txns].sort(byDate), run = null;
   if (a){
     rows = rows.filter(t => effect(t, a.id) !== 0);
     let r = a.opening; run = new Map();
     rows.forEach(t => { r += effect(t, a.id); run.set(t.id, r); });
   }
+  const q = query.trim().toLowerCase();
+  if (q) rows = rows.filter(t => (t.desc || '').toLowerCase().includes(q));
   rows.reverse();
-
   if (!rows.length){
-    list.innerHTML = `<div class="empty">${db.accounts.length ? 'No transactions yet. Tap + to add one.' : 'Add an account first.'}</div>` + (a ? openingCard(a) : '');
+    list.innerHTML = `<div class="card empty" style="margin-top:12px">${q ? 'No matches.' : db.accounts.length ? 'No transactions yet. Tap + to add one.' : 'Add an account first.'}</div>`;
     return;
   }
-  let h = '', last = '';
+  let h = '', last = '', group = [];
+  const flush = () => { if (group.length) h += `<div class="card list">${group.join('')}</div>`; group = []; };
   rows.forEach(t => {
-    if (t.date !== last){ h += `<div class="day">${niceDate(t.date)}</div>`; last = t.date; }
-    const from = accById(t.acc), to = accById(t.to), cur = from ? from.cur : '';
-    let sign, cls = t.type, where;
-    if (t.type === 'tr'){
-      where = `${esc(from ? from.name : '?')} → ${esc(to ? to.name : '?')}`;
-      sign = a ? (effect(t, a.id) > 0 ? '+' : '−') : '';
-    } else {
-      where = esc(from ? from.name : '?');
-      sign = t.type === 'in' ? '+' : '−';
-    }
-    const label = t.desc || (t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer');
-    h += `<div class="card txn" data-id="${t.id}">
-      <div class="name">${esc(label)}</div><div class="amt ${cls}">${sign}${fmt(t.amount, cur)}</div>
-      <div class="sub">${where}</div><div class="run">${run ? 'Balance ' + fmt(run.get(t.id), a.cur) : ''}</div></div>`;
+    if (t.date !== last){ flush(); h += `<div class="day">${niceDate(t.date)}</div>`; last = t.date; }
+    group.push(txRow(t, a, run ? run.get(t.id) : undefined));
   });
-  if (a) h += openingCard(a);
+  flush();
+  if (a && !q) h += `<div class="day">Start</div><div class="card list"><div class="li" style="cursor:default"><div class="li-main"><div class="nm">Opening balance</div></div><div class="amt">${money(a.opening, a.cur)}</div></div></div>`;
   list.innerHTML = h;
-  list.querySelectorAll('.txn[data-id]').forEach(c => c.onclick = () => openTxn(c.dataset.id));
 }
-$('#filterAcc').onchange = e => { filter = e.target.value; renderTxns(); };
+$('#filterAcc').onchange = e => { filter = e.target.value; renderTxnList(); };
+$('#search').oninput = e => { query = e.target.value; renderTxnList(); };
 
-/* ---------- transaction dialog ---------- */
+/* ---------- Settings ---------- */
+function renderSettings(){
+  $$('input[name=theme]').forEach(r => r.checked = r.value === cfg.theme);
+  $('#hideOnOpen').checked = !!cfg.hideOnOpen;
+  $('#userName').value = cfg.name || '';
+  $('#defCur').value = cfg.currency || 'Rs';
+  $('#ver').textContent = VERSION;
+  $('#lastBackup').textContent = cfg.lastBackup ? `Last backup: ${niceDate(cfg.lastBackup)}.` : 'No backup made yet.';
+  const n = $('#storageNote');
+  const s = `${db.accounts.length} account${db.accounts.length === 1 ? '' : 's'} and ${db.txns.length} transaction${db.txns.length === 1 ? '' : 's'} stored on this device.`;
+  n.textContent = s;
+  if (navigator.storage && navigator.storage.persisted){
+    navigator.storage.persisted().then(p => {
+      n.textContent = s + (p ? ' Storage is protected from automatic clean-up.' : ' Install this app to your home screen so the browser keeps your data safe.');
+    }).catch(() => {});
+  }
+}
+$$('input[name=theme]').forEach(r => r.onchange = () => { cfg.theme = r.value; saveCfg(); applyTheme(); });
+$('#hideOnOpen').onchange = e => { cfg.hideOnOpen = e.target.checked; saveCfg(); };
+$('#userName').oninput = e => { cfg.name = e.target.value.trim(); saveCfg(); };
+$('#defCur').oninput = e => { cfg.currency = e.target.value.trim() || 'Rs'; saveCfg(); };
+$('#applyCur').onclick = () => {
+  const c = cfg.currency || 'Rs';
+  if (!db.accounts.length) return toast('No accounts yet');
+  if (!confirm(`Show all ${db.accounts.length} accounts in ${c}? Amounts stay the same, only the currency label changes.`)) return;
+  db.accounts.forEach(a => a.cur = c); save(); toast(`All accounts now use ${c}`);
+};
+
+function exportBackup(){
+  const blob = new Blob([JSON.stringify({ app: 'my-accounts', version: 1, exported: new Date().toISOString(), ...db }, null, 2)], { type: 'application/json' });
+  const u = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = u; a.download = `accounts-backup-${today()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 2000);
+  cfg.lastBackup = today(); saveCfg(); render();
+  toast('Backup file saved');
+}
+$('#importBtn').onclick = () => $('#importFile').click();
+$('#importFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!Array.isArray(d.accounts) || !Array.isArray(d.txns)) throw 0;
+    if (!confirm(`Replace the data on this device with this backup (${d.accounts.length} accounts, ${d.txns.length} transactions)?`)) return;
+    db = { accounts: d.accounts, txns: d.txns }; save(); toast('Backup imported');
+  } catch(_) { alert("That file isn't a valid backup."); }
+};
+$('#wipeBtn').onclick = () => {
+  if (confirm('Erase all accounts and transactions on this device? Export a backup first if you might need them.') && confirm('Are you sure? This cannot be undone.')){
+    db = { accounts: [], txns: [] }; save(); toast('All data erased');
+  }
+};
+
+/* ---------- Transaction dialog ---------- */
 const dT = $('#dlgTxn');
 let editing = null;
 const accOptions = () => db.accounts.map(a => `<option value="${a.id}">${esc(a.name)} (${esc(a.cur)})</option>`).join('');
@@ -283,7 +593,7 @@ function syncType(){ const tr = curType() === 'tr'; $('#toWrap').hidden = !tr; $
 function setType(v){ dT.querySelector(`input[name=type][value="${v}"]`).checked = true; syncType(); }
 dT.querySelectorAll('input[name=type]').forEach(r => r.onchange = syncType);
 
-function openTxn(id){
+function openTxn(id, type){
   if (!db.accounts.length){ openAcc(); return; }
   editing = id ? db.txns.find(t => t.id === id) : null;
   $('#fAcc').innerHTML = accOptions(); $('#fTo').innerHTML = accOptions();
@@ -297,16 +607,15 @@ function openTxn(id){
     $('#txnDel').hidden = false;
   } else {
     $('#txnTitle').textContent = 'New transaction';
-    setType('out');
-    $('#fAcc').value = filter && accById(filter) ? filter : db.accounts[0].id;
+    setType(type || 'out');
+    $('#fAcc').value = filter && accById(filter) && page === 'activity' ? filter : db.accounts[0].id;
     $('#fTo').value = (db.accounts.find(a => a.id !== $('#fAcc').value) || db.accounts[0]).id;
     $('#fAmt').value = ''; $('#fDesc').value = ''; $('#fDate').value = today();
     $('#txnDel').hidden = true;
   }
   dT.showModal();
-  if (!editing) setTimeout(() => $('#fAmt').focus(), 50);
+  if (!editing) setTimeout(() => $('#fAmt').focus(), 60);
 }
-
 function saveTxn(){
   const err = m => { $('#txnErr').textContent = m; };
   const type = curType(), acc = $('#fAcc').value, to = $('#fTo').value;
@@ -320,91 +629,82 @@ function saveTxn(){
   const t = { type, acc, to: type === 'tr' ? to : null, amount, desc, date };
   if (editing) Object.assign(editing, t);
   else db.txns.push({ id: uid(), ts: Date.now(), ...t });
-  dT.close(); save();
+  dT.close(); save(); toast(editing ? 'Transaction updated' : 'Transaction added');
 }
 $('#txnSave').onclick = saveTxn;
 $('#txnDel').onclick = () => {
-  if (editing && confirm('Delete this transaction?')){ db.txns = db.txns.filter(t => t !== editing); dT.close(); save(); }
+  if (editing && confirm('Delete this transaction?')){ db.txns = db.txns.filter(t => t !== editing); dT.close(); save(); toast('Transaction deleted'); }
 };
 
-/* ---------- account dialog ---------- */
+/* ---------- Account dialog ---------- */
 const dA = $('#dlgAcc');
 let editingAcc = null;
+$('#aColors').innerHTML = COLORS.map((c, i) => `<input type="radio" name="acolor" id="ac${i}" value="${c}"><label for="ac${i}" style="background:${c}" aria-label="Colour ${i + 1}"></label>`).join('');
 function openAcc(id){
   editingAcc = id ? accById(id) : null;
   $('#accErr').textContent = '';
   $('#accTitle').textContent = editingAcc ? 'Edit account' : 'New account';
   $('#aName').value = editingAcc ? editingAcc.name : '';
-  $('#aCur').value = editingAcc ? editingAcc.cur : (db.accounts[0] ? db.accounts[0].cur : '£');
+  $('#aCur').value = editingAcc ? editingAcc.cur : (cfg.currency || 'Rs');
   $('#aOpen').value = editingAcc ? (editingAcc.opening / 100).toFixed(2) : '';
+  const col = editingAcc ? colorOf(editingAcc) : COLORS[db.accounts.length % COLORS.length];
+  $$('input[name=acolor]').forEach(r => r.checked = r.value === col);
   $('#accDel').hidden = !editingAcc;
   dA.showModal();
 }
 function saveAcc(){
   const err = m => { $('#accErr').textContent = m; };
-  const name = $('#aName').value.trim(), cur = $('#aCur').value.trim() || '£', ov = $('#aOpen').value.trim();
+  const name = $('#aName').value.trim(), cur = $('#aCur').value.trim() || cfg.currency || 'Rs', ov = $('#aOpen').value.trim();
+  const color = (dA.querySelector('input[name=acolor]:checked') || {}).value || COLORS[0];
   const opening = ov === '' ? 0 : minor(ov);
   if (!name) return err('Give the account a name.');
   if (!Number.isFinite(opening)) return err('Opening balance must be a number, e.g. 1500 or -250.');
-  if (editingAcc) Object.assign(editingAcc, { name, cur, opening });
-  else db.accounts.push({ id: uid(), name, cur, opening, created: today() });
-  dA.close(); save();
+  if (editingAcc) Object.assign(editingAcc, { name, cur, opening, color });
+  else db.accounts.push({ id: uid(), name, cur, opening, color, created: today() });
+  dA.close(); save(); toast(editingAcc ? 'Account updated' : 'Account added');
 }
 $('#accSave').onclick = saveAcc;
 $('#accDel').onclick = () => {
   const a = editingAcc; if (!a) return;
-  const n = db.txns.filter(t => t.acc === a.id || t.to === a.id).length;
+  const n = countFor(a);
   if (!confirm(`Delete "${a.name}"${n ? ` and its ${n} transaction${n === 1 ? '' : 's'}` : ''}? This can't be undone.`)) return;
   db.accounts = db.accounts.filter(x => x !== a);
   db.txns = db.txns.filter(t => t.acc !== a.id && t.to !== a.id);
-  dA.close(); save();
+  dA.close(); save(); toast('Account deleted');
 };
 
-document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());
-$('#fab').onclick = () => openTxn();
-// Pressing Enter in a text box saves, like a normal form
+$$('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());
 dT.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); saveTxn(); } });
 dA.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); saveAcc(); } });
 
-/* ---------- backup ---------- */
-function renderSettings(){
-  const n = $('#storageNote');
-  const s = `${db.accounts.length} account${db.accounts.length === 1 ? '' : 's'} and ${db.txns.length} transaction${db.txns.length === 1 ? '' : 's'} stored on this device.`;
-  n.textContent = s;
-  if (navigator.storage && navigator.storage.persisted){
-    navigator.storage.persisted().then(p => {
-      n.textContent = s + (p ? ' Storage is protected from automatic clean-up.' : ' Install this app to your home screen so the browser keeps your data safe.');
-    }).catch(() => {});
+/* ---------- One click handler for the whole app ---------- */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act],[data-edit-acc],[data-acc],[data-tx],[data-page]');
+  if (!el || el.closest('dialog')) return;
+  const d = el.dataset;
+  if (d.page){ go(d.page); return; }
+  if (d.editAcc){ openAcc(d.editAcc); return; }
+  if (d.acc){ filter = d.acc; query = ''; $('#search').value = ''; go('activity'); return; }
+  if (d.tx){ openTxn(d.tx); return; }
+  switch (d.act){
+    case 'eye': hidden = !hidden; render(); break;
+    case 'addAcc': openAcc(); break;
+    case 'add': openTxn(); break;
+    case 'in': case 'out': case 'tr': openTxn(null, d.act); break;
+    case 'export': exportBackup(); break;
   }
-}
-$('#exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify({ app: 'my-accounts', version: 1, exported: new Date().toISOString(), ...db }, null, 2)], { type: 'application/json' });
-  const u = URL.createObjectURL(blob), a = document.createElement('a');
-  a.href = u; a.download = `accounts-backup-${today()}.json`;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(u), 2000);
-};
-$('#importBtn').onclick = () => $('#importFile').click();
-$('#importFile').onchange = async e => {
-  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-  try {
-    const d = JSON.parse(await f.text());
-    if (!Array.isArray(d.accounts) || !Array.isArray(d.txns)) throw 0;
-    if (!confirm(`Replace the data on this device with this backup (${d.accounts.length} accounts, ${d.txns.length} transactions)?`)) return;
-    db = { accounts: d.accounts, txns: d.txns }; save(); alert('Backup imported.');
-  } catch(_) { alert("That file isn't a valid backup."); }
-};
-$('#wipeBtn').onclick = () => {
-  if (confirm('Erase all accounts and transactions on this device? Export a backup first if you might need them.') && confirm('Are you sure? This cannot be undone.')){
-    db = { accounts: [], txns: [] }; save();
-  }
-};
+});
 
-/* ---------- offline + persistence ---------- */
+/* ---------- Start ---------- */
+applyTheme();
+go('home');
+const splash = $('#splash');
+const hideSplash = () => { splash.classList.add('out'); setTimeout(() => splash.remove(), 450); };
+splash.onclick = hideSplash;
+setTimeout(hideSplash, 1200);
+
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch(e){}
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
-
-show('accounts');
 </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 // Caches the app so it opens with no internet connection.
 // Bump the version number when you change index.html so devices pick up the update.
-const CACHE = 'my-accounts-v5';
+const CACHE = 'my-accounts-v7';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

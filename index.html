@@ -202,7 +202,7 @@ label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:1
 
 dialog{border:0;border-radius:22px;padding:20px;width:min(480px,calc(100% - 24px));max-height:calc(100% - 24px);background:var(--card);color:var(--text)}
 dialog::backdrop{background:rgba(0,0,0,.5)}
-dialog h2{margin:0;font-size:20px}
+dialog h2{margin:0;font-size:20px;outline:none}
 dialog .seg{margin-top:14px}
 .row{display:flex;gap:8px;margin-top:20px}
 .row>*{flex:1}
@@ -210,6 +210,14 @@ dialog .seg{margin-top:14px}
 .err{color:var(--out);font-size:14px;min-height:1.2em;margin-top:10px}
 .toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:50;box-shadow:var(--shadow);white-space:nowrap}
 @media (min-width:900px){.toast{bottom:32px}}
+.toast{display:flex;align-items:center;gap:14px}
+.toast button{border:0;background:none;color:var(--acc);font-weight:800;cursor:pointer;padding:2px 4px;text-transform:uppercase;font-size:13px;letter-spacing:.3px}
+:root:not([data-theme=dark]) .toast button{color:#93c5fd}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .toast button{color:var(--acc)}}
+.btn.del{background:var(--out);border-color:var(--out);color:#fff}
+.cfbox{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+#dlgConfirm{width:min(400px,calc(100% - 32px))}
+#cfText{color:var(--muted);font-size:14.5px;margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -325,7 +333,7 @@ dialog .seg{margin-top:14px}
 
 <dialog id="dlgTxn">
   <form novalidate onsubmit="return false">
-    <h2 id="txnTitle">New transaction</h2>
+    <h2 id="txnTitle" tabindex="-1" autofocus>New transaction</h2>
     <div class="seg">
       <input type="radio" name="type" id="tIn" value="in"><label for="tIn">Income</label>
       <input type="radio" name="type" id="tOut" value="out" checked><label for="tOut">Expense</label>
@@ -359,7 +367,7 @@ dialog .seg{margin-top:14px}
 
 <dialog id="dlgAcc">
   <form novalidate onsubmit="return false">
-    <h2 id="accTitle">New account</h2>
+    <h2 id="accTitle" tabindex="-1" autofocus>New account</h2>
     <label class="f" for="aName">Account name</label>
     <input id="aName" type="text" maxlength="40" placeholder="e.g. Meezan, HBL, Cash" autocomplete="off">
     <label class="f">Colour</label>
@@ -380,7 +388,7 @@ dialog .seg{margin-top:14px}
 
 <dialog id="dlgCat">
   <form novalidate onsubmit="return false">
-    <h2 id="catTitle">New category</h2>
+    <h2 id="catTitle" tabindex="-1" autofocus>New category</h2>
     <div class="seg">
       <input type="radio" name="ctype" id="ctOut" value="out" checked><label for="ctOut">Expense</label>
       <input type="radio" name="ctype" id="ctIn" value="in"><label for="ctIn">Income</label>
@@ -406,8 +414,20 @@ dialog .seg{margin-top:14px}
   </form>
 </dialog>
 
+<dialog id="dlgConfirm">
+  <form novalidate onsubmit="return false">
+    <h2 id="cfTitle" tabindex="-1" autofocus></h2>
+    <p id="cfText"></p>
+    <div id="cfBox"></div>
+    <div class="row">
+      <button type="button" class="btn" id="cfNo">Cancel</button>
+      <button type="button" class="btn del" id="cfYes">Delete</button>
+    </div>
+  </form>
+</dialog>
+
 <script>
-const VERSION = '1.3';
+const VERSION = '1.3.2';
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 
 /* ---------- Icons ---------- */
@@ -497,11 +517,36 @@ function totals(){ const t = {}; db.accounts.forEach(a => t[a.cur] = (t[a.cur] |
 const repCur = () => db.accounts.some(a => a.cur === cfg.currency) ? cfg.currency : (db.accounts[0] ? db.accounts[0].cur : cfg.currency);
 const inCur = (t, cur) => { const a = accById(t.acc); return a && a.cur === cur; };
 
-function toast(msg){
+function toast(msg, undo){   // optional Undo button, shown for 6 seconds
   $$('.toast').forEach(t => t.remove());
-  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
-  document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
+  const t = document.createElement('div'); t.className = 'toast';
+  const span = document.createElement('span'); span.textContent = msg; t.appendChild(span);
+  if (undo){
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Undo';
+    b.onclick = () => { t.remove(); undo(); }; t.appendChild(b);
+  }
+  document.body.appendChild(t); setTimeout(() => t.remove(), undo ? 6000 : 2200);
 }
+
+/* ---------- In-app confirmation (replaces the browser's pop-up) ---------- */
+function ask({ title, text = '', box = '', yes = 'Delete', danger = true }){
+  return new Promise(resolve => {
+    const d = $('#dlgConfirm');
+    $('#cfTitle').textContent = title;
+    $('#cfText').textContent = text; $('#cfText').hidden = !text;
+    $('#cfBox').innerHTML = box ? `<div class="cfbox">${box}</div>` : '';
+    const y = $('#cfYes'); y.textContent = yes; y.className = 'btn ' + (danger ? 'del' : 'primary');
+    let done = false;
+    const finish = v => { if (done) return; done = true; if (d.open) d.close(); resolve(v); };
+    y.onclick = () => finish(true);
+    $('#cfNo').onclick = () => finish(false);
+    d.onclose = () => finish(false);
+    d.showModal();
+  });
+}
+// Snapshot before a delete so Undo can put everything back exactly as it was
+const snapshot = () => JSON.stringify(db);
+const restore = snap => { db = JSON.parse(snap); save(); toast('Restored'); };
 
 /* ---------- Categories: defaults + upgrade of older data ---------- */
 const DEFAULT_CATS = [
@@ -889,10 +934,10 @@ $$('input[name=theme]').forEach(r => r.onchange = () => { cfg.theme = r.value; s
 $('#hideOnOpen').onchange = e => { cfg.hideOnOpen = e.target.checked; saveCfg(); };
 $('#userName').oninput = e => { cfg.name = e.target.value.trim(); saveCfg(); };
 $('#defCur').oninput = e => { cfg.currency = e.target.value.trim() || 'Rs'; saveCfg(); };
-$('#applyCur').onclick = () => {
+$('#applyCur').onclick = async () => {
   const c = cfg.currency || 'Rs';
   if (!db.accounts.length) return toast('No accounts yet');
-  if (!confirm(`Show all ${db.accounts.length} accounts in ${c}? Amounts stay the same, only the currency label changes.`)) return;
+  if (!await ask({ title: `Use ${c} for all accounts?`, text: 'Amounts stay the same, only the currency label changes.', yes: 'Apply', danger: false })) return;
   db.accounts.forEach(a => a.cur = c); save(); toast(`All accounts now use ${c}`);
 };
 
@@ -911,16 +956,17 @@ $('#importFile').onchange = async e => {
   try {
     const d = JSON.parse(await f.text());
     if (!Array.isArray(d.accounts) || !Array.isArray(d.txns)) throw 0;
-    if (!confirm(`Replace the data on this device with this backup (${d.accounts.length} accounts, ${d.txns.length} transactions)?`)) return;
+    if (!await ask({ title: 'Import this backup?', text: `Everything on this device will be replaced with the backup (${d.accounts.length} accounts, ${d.txns.length} transactions).`, yes: 'Replace', danger: true })) return;
     db = { accounts: d.accounts, txns: d.txns };
     if (Array.isArray(d.cats)) db.cats = d.cats; else ensureCats();
     save(); toast('Backup imported');
   } catch(_) { alert("That file isn't a valid backup."); }
 };
-$('#wipeBtn').onclick = () => {
-  if (confirm('Erase all accounts and transactions on this device? Export a backup first if you might need them.') && confirm('Are you sure? This cannot be undone.')){
-    db = { accounts: [], txns: [] }; ensureCats(); save(); toast('All data erased');
-  }
+$('#wipeBtn').onclick = async () => {
+  if (!await ask({ title: 'Erase all data?', text: 'All accounts, transactions and categories on this device will be deleted. Export a backup first if you might need them.', yes: 'Erase' })) return;
+  if (!await ask({ title: 'Are you sure?', text: 'This removes everything from this device.', yes: 'Yes, erase all' })) return;
+  const snap = snapshot();
+  db = { accounts: [], txns: [] }; ensureCats(); save(); toast('All data erased', () => restore(snap));
 };
 
 /* ---------- Transaction dialog ---------- */
@@ -980,7 +1026,6 @@ function openTxn(id, type){
     $('#txnDel').hidden = true;
   }
   dT.showModal();
-  if (!editing) setTimeout(() => $('#fAmt').focus(), 60);
 }
 function saveTxn(){
   const err = m => { $('#txnErr').textContent = m; };
@@ -999,8 +1044,18 @@ function saveTxn(){
   dT.close(); save(); toast(wasEditing ? 'Transaction updated' : 'Transaction added');
 }
 $('#txnSave').onclick = saveTxn;
-$('#txnDel').onclick = () => {
-  if (editing && confirm('Delete this transaction?')){ db.txns = db.txns.filter(t => t !== editing); dT.close(); save(); toast('Transaction deleted'); }
+$('#txnDel').onclick = async () => {
+  const t = editing; if (!t) return;
+  const a = accById(t.acc), to = accById(t.to), c = catById(t.cat);
+  const label = t.desc || (c ? c.name : t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer');
+  const where = t.type === 'tr' ? `${esc(a ? a.name : '?')} → ${esc(to ? to.name : '?')}` : esc(a ? a.name : '?');
+  const sign = t.type === 'in' ? '+' : t.type === 'out' ? '−' : '';
+  const box = `${txIcon(t)}<div class="li-main"><div class="nm">${esc(label)}</div><div class="sm">${where} · ${niceDate(t.date)}</div></div>
+    <div class="amt ${t.type}">${sign}${fmt(t.amount, a ? a.cur : '')}</div>`;
+  if (!await ask({ title: 'Delete this transaction?', text: 'Your account balance will be updated.', box })) return;
+  const snap = snapshot();
+  db.txns = db.txns.filter(x => x !== t); dT.close(); save();
+  toast('Transaction deleted', () => restore(snap));
 };
 
 /* ---------- Account dialog ---------- */
@@ -1032,13 +1087,15 @@ function saveAcc(){
   dA.close(); save(); toast(wasEditing ? 'Account updated' : 'Account added');
 }
 $('#accSave').onclick = saveAcc;
-$('#accDel').onclick = () => {
+$('#accDel').onclick = async () => {
   const a = editingAcc; if (!a) return;
   const n = countFor(a);
-  if (!confirm(`Delete "${a.name}"${n ? ` and its ${n} transaction${n === 1 ? '' : 's'}` : ''}? This can't be undone.`)) return;
+  const box = `<div class="dot" style="background:${colorOf(a)}">${esc(initial(a))}</div><div class="li-main"><div class="nm">${esc(a.name)}</div><div class="sm">${n} transaction${n === 1 ? '' : 's'}</div></div><div class="amt">${fmt(balance(a), a.cur)}</div>`;
+  if (!await ask({ title: 'Delete this account?', text: n ? `Its ${n} transaction${n === 1 ? '' : 's'} will be deleted too.` : '', box })) return;
+  const snap = snapshot();
   db.accounts = db.accounts.filter(x => x !== a);
   db.txns = db.txns.filter(t => t.acc !== a.id && t.to !== a.id);
-  dA.close(); save(); toast('Account deleted');
+  dA.close(); save(); toast('Account deleted', () => restore(snap));
 };
 
 /* ---------- Category dialog ---------- */
@@ -1091,13 +1148,15 @@ function saveCat(){
   toast(editingCat ? 'Category updated' : 'Category added');
 }
 $('#catSave').onclick = saveCat;
-$('#catDel').onclick = () => {
+$('#catDel').onclick = async () => {
   const c = editingCat; if (!c) return;
   const n = db.txns.filter(t => t.cat === c.id).length;
-  if (!confirm(`Delete "${c.name}"?${n ? ` Its ${n} transaction${n === 1 ? '' : 's'} will become Uncategorised.` : ''}`)) return;
+  const box = `<div class="tic" style="background:${tint(c.color)}">${esc(c.emoji)}</div><div class="li-main"><div class="nm">${esc(c.name)}</div><div class="sm">${c.type === 'out' ? 'Expense' : 'Income'} category</div></div>`;
+  if (!await ask({ title: 'Delete this category?', text: n ? `Its ${n} transaction${n === 1 ? '' : 's'} will be kept but become Uncategorised.` : '', box })) return;
+  const snap = snapshot();
   db.txns.forEach(t => { if (t.cat === c.id) t.cat = null; });
   db.cats = db.cats.filter(x => x !== c);
-  dC.close(); save(); toast('Category deleted');
+  dC.close(); save(); toast('Category deleted', () => restore(snap));
 };
 
 $$('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());

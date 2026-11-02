@@ -189,6 +189,47 @@ label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:1
 .flow{display:flex;gap:4px;height:10px;border-radius:99px;overflow:hidden;margin:12px 0 8px}
 .flow b{display:block;border-radius:99px;min-width:6px}
 .allgood{display:flex;align-items:center;gap:12px;padding:14px 16px;font-size:14px}
+/* favourites */
+.favs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;margin:0 -2px;scrollbar-width:none}
+.favs::-webkit-scrollbar{display:none}
+.fav{flex:none;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;font-weight:600;max-width:200px}
+.fav .e{font-size:18px}
+.fav .a{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+.fav .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* recap */
+.recap{position:relative;padding:16px;margin-top:12px;background:linear-gradient(135deg,var(--soft),var(--card))}
+.recap .x{position:absolute;right:8px;top:8px;width:32px;height:32px;border:0;background:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+.recap .big{font-size:22px;font-weight:800;margin:4px 0 10px}
+.recap .rows{display:grid;gap:8px;font-size:13.5px}
+.recap .rows div{display:flex;gap:10px;align-items:center}
+.recap .rows i{font-style:normal;width:26px;text-align:center;font-size:16px}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal .dow{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cday{position:relative;aspect-ratio:1/1.08;border-radius:11px;border:1px solid var(--line);background:var(--card);padding:5px 4px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;overflow:hidden;min-width:0}
+.cday .d{font-size:12px;font-weight:700;position:relative}
+.cday .s{font-size:10.5px;font-weight:700;color:var(--out);text-align:right;position:relative;white-space:nowrap;overflow:hidden}
+.cday .heat{position:absolute;inset:0;background:var(--out);pointer-events:none}
+.cday .indot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--in)}
+.cday.today{border-color:var(--text)}
+.cday.sel{box-shadow:0 0 0 2px var(--acc);border-color:var(--acc)}
+.cday.blank{visibility:hidden}
+.cday.future{opacity:.45}
+.calsum{display:flex;justify-content:space-between;margin:2px 4px 10px;font-size:13.5px}
+@media (min-width:900px){.cday{aspect-ratio:auto;height:76px;padding:7px 8px}.cday .s{font-size:12px}}
+.nav{white-space:nowrap}.navr{white-space:nowrap;padding-left:8px}
+/* people */
+.pp{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;flex:none}
+.pbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.pbtns .btn{padding:11px 8px;font-size:14px}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--soft);color:var(--muted);margin-left:6px;vertical-align:1px}
+.rowsw{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;cursor:pointer;font-weight:600;font-size:14.5px}
+.rowsw input{display:none}
+.rowsw i{width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.rowsw i::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.rowsw input:checked+i{background:var(--acc)}
+.rowsw input:checked+i::after{transform:translateX(18px)}
+.navgrp{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:10px 12px 2px;opacity:.8}
 
 /* categories */
 .chips{display:flex;flex-wrap:wrap;gap:8px;max-height:168px;overflow:auto;padding:2px}
@@ -253,11 +294,15 @@ dialog .seg{margin-top:14px}
     <button class="nav" data-page="home"><span data-icon="home"></span>Dashboard</button>
     <button class="nav" data-page="accounts"><span data-icon="wallet"></span>Accounts<span class="navr" id="navAccN"></span></button>
     <button class="nav" data-page="activity"><span data-icon="list"></span>Activity</button>
+    <button class="nav" data-page="calendar"><span data-icon="cal"></span>Calendar</button>
     <button class="nav" data-page="reports"><span data-icon="chart"></span>Reports</button>
     <button class="nav" data-page="budgets"><span data-icon="target"></span>Budgets<span class="badge" id="navBud" hidden></span></button>
+    <div class="hr"></div>
+    <button class="nav" data-page="loans"><span data-icon="hand"></span>Lent &amp; borrowed<span class="navr" id="navLoan"></span></button>
+    <button class="nav" data-page="recurring"><span data-icon="repeat"></span>Recurring &amp; favourites</button>
     <button class="nav" data-page="categories"><span data-icon="tag"></span>Categories</button>
     <div class="hr"></div>
-    <button class="nav" data-page="backup"><span data-icon="save"></span>Backup<span class="navr" id="navBk"></span></button>
+    <button class="nav" data-page="backup"><span data-icon="save"></span>Backup &amp; export<span class="navr" id="navBk"></span></button>
     <label class="nav"><span data-icon="moon"></span>Dark mode<input type="checkbox" id="darkSw" hidden><i class="mini"></i></label>
     <button class="nav" data-page="settings"><span data-icon="gear"></span>Settings</button>
     <button class="btn primary addbtn" data-act="add">+ Add transaction</button>
@@ -285,6 +330,9 @@ dialog .seg{margin-top:14px}
 
     <section id="pg-reports" hidden></section>
     <section id="pg-budgets" hidden></section>
+    <section id="pg-calendar" hidden></section>
+    <section id="pg-loans" hidden></section>
+    <section id="pg-recurring" hidden></section>
 
     <section id="pg-backup" hidden>
       <div class="card pad set">
@@ -295,6 +343,11 @@ dialog .seg{margin-top:14px}
         <div style="height:8px"></div>
         <button class="btn" id="importBtn">Import backup file</button>
         <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </div>
+      <div class="card pad set">
+        <h3>Export to Excel</h3>
+        <p>Download all your transactions as a spreadsheet (CSV) that opens in Excel or Google Sheets. This is for viewing and analysis, not for restoring. Use the backup file for that.</p>
+        <button class="btn" data-act="csv">Export transactions (CSV)</button>
       </div>
     </section>
 
@@ -364,6 +417,17 @@ dialog .seg{margin-top:14px}
     <datalist id="descList"></datalist>
     <label class="f" for="fDate">Date</label>
     <input id="fDate" type="date">
+    <div id="repWrap">
+      <label class="f" for="fRepeat">Repeat</label>
+      <select id="fRepeat">
+        <option value="">Doesn't repeat</option>
+        <option value="weekly">Every week</option>
+        <option value="monthly">Every month</option>
+        <option value="yearly">Every year</option>
+      </select>
+    </div>
+    <p class="note" id="recNote" hidden></p>
+    <label class="rowsw" id="favWrap"><span>☆ Save as favourite</span><input type="checkbox" id="fFav"><i></i></label>
     <div class="err" id="txnErr"></div>
     <div class="row">
       <button type="button" class="btn" data-close>Cancel</button>
@@ -422,6 +486,64 @@ dialog .seg{margin-top:14px}
   </form>
 </dialog>
 
+<dialog id="dlgLoan">
+  <form novalidate onsubmit="return false">
+    <h2 id="loanTitle" tabindex="-1" autofocus>Lent &amp; borrowed</h2>
+    <div class="seg" style="flex-wrap:wrap">
+      <input type="radio" name="ltype" id="lLent" value="lent" checked><label for="lLent">I lent</label>
+      <input type="radio" name="ltype" id="lGot" value="got"><label for="lGot">Got back</label>
+    </div>
+    <div class="seg" style="margin-top:6px">
+      <input type="radio" name="ltype" id="lBor" value="borrowed"><label for="lBor">I borrowed</label>
+      <input type="radio" name="ltype" id="lRep" value="repaid"><label for="lRep">Paid back</label>
+    </div>
+    <p class="note" id="lHint"></p>
+    <label class="f" for="lPerson">Person</label>
+    <input id="lPerson" type="text" maxlength="40" placeholder="e.g. Ali" autocomplete="off" list="peopleList">
+    <datalist id="peopleList"></datalist>
+    <label class="f" for="lAmt">Amount</label>
+    <input id="lAmt" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+    <label class="f" for="lAcc" id="lAccLbl">From account</label>
+    <select id="lAcc"></select>
+    <label class="f" for="lNote">Note (optional)</label>
+    <input id="lNote" type="text" maxlength="120" placeholder="e.g. For his rent" autocomplete="off">
+    <label class="f" for="lDate">Date</label>
+    <input id="lDate" type="date">
+    <div class="err" id="loanErr"></div>
+    <div class="row">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="button" class="btn primary" id="loanSave">Save</button>
+    </div>
+    <button type="button" class="btn danger" id="loanDel" style="margin-top:8px" hidden>Delete entry</button>
+  </form>
+</dialog>
+
+<dialog id="dlgRule">
+  <form novalidate onsubmit="return false">
+    <h2 id="ruleTitle" tabindex="-1" autofocus></h2>
+    <p class="note" id="ruleSub"></p>
+    <label class="f" for="rDesc">Description</label>
+    <input id="rDesc" type="text" maxlength="120" autocomplete="off">
+    <label class="f" for="rAmt">Amount</label>
+    <input id="rAmt" type="text" inputmode="decimal" autocomplete="off">
+    <label class="f" for="rAcc">Account</label>
+    <select id="rAcc"></select>
+    <div id="rRecOnly">
+      <label class="f" for="rFreq">Repeats</label>
+      <select id="rFreq"><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select>
+      <label class="f" for="rNext">Next date</label>
+      <input id="rNext" type="date">
+      <label class="rowsw"><span>Paused</span><input type="checkbox" id="rPaused"><i></i></label>
+    </div>
+    <div class="err" id="ruleErr"></div>
+    <div class="row">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="button" class="btn primary" id="ruleSave">Save</button>
+    </div>
+    <button type="button" class="btn danger" id="ruleDel" style="margin-top:8px">Delete</button>
+  </form>
+</dialog>
+
 <dialog id="dlgConfirm">
   <form novalidate onsubmit="return false">
     <h2 id="cfTitle" tabindex="-1" autofocus></h2>
@@ -435,7 +557,7 @@ dialog .seg{margin-top:14px}
 </dialog>
 
 <script>
-const VERSION = '1.4.2';
+const VERSION = '1.5';
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 
 /* ---------- Icons ---------- */
@@ -448,7 +570,13 @@ const I = {
   tag: svg('<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>'),
   gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
   plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  alert: svg('<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>'),
   menu: svg('<path d="M4 6h16M4 12h16M4 18h16"/>'),
+  cal: svg('<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M16 3v4M8 3v4M3 10h18"/>'),
+  hand: svg('<path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 15 6 6"/>'),
+  repeat: svg('<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>'),
+  star: svg('<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/>'),
+  csv: svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/>'),
   target: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'),
   moon: svg('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'),
   back: svg('<path d="M15 18l-6-6 6-6"/>'),
@@ -528,6 +656,23 @@ const balance = a => db.txns.reduce((s, t) => s + effect(t, a.id), a.opening);
 function totals(){ const t = {}; db.accounts.forEach(a => t[a.cur] = (t[a.cur] || 0) + balance(a)); return t; }
 // Reports use one currency: the default one if any account uses it, otherwise the first account's
 const repCur = () => db.accounts.some(a => a.cur === cfg.currency) ? cfg.currency : (db.accounts[0] ? db.accounts[0].cur : cfg.currency);
+// Accounts in a different currency can't be added into the same totals, so make that visible instead of silently skipping them
+const oddAccs = () => { const c = repCur(); return db.accounts.filter(a => a.cur !== c); };
+const nameList = arr => arr.length <= 2 ? arr.map(a => a.name).join(' and ') : `${arr[0].name}, ${arr[1].name} and ${arr.length - 2} more`;
+function curBanner(){
+  const odd = oddAccs(); if (!odd.length) return '';
+  const c = repCur(), labels = [...new Set(odd.map(a => a.cur))].join(' / ');
+  return `<div class="banner" style="background:var(--outbg);margin:0 0 12px">${I.alert}<span><b>${esc(nameList(odd))}</b> ${odd.length === 1 ? 'uses' : 'use'} ${esc(labels)}, so ${odd.length === 1 ? 'its' : 'their'} spending isn't counted in ${esc(c)} totals or budgets.</span><a data-act="fixCur">Fix</a></div>`;
+}
+async function fixCurrency(){
+  const odd = oddAccs(), c = repCur(); if (!odd.length) return;
+  if (!await ask({ title: `Switch ${odd.length === 1 ? odd[0].name : odd.length + ' accounts'} to ${c}?`,
+    text: `${nameList(odd)} will be labelled ${c} like your other accounts. Amounts stay exactly the same, only the currency label changes. Use this if these accounts are really in ${c}.`,
+    yes: 'Switch to ' + c, danger: false })) return;
+  const snap = snapshot();
+  odd.forEach(a => a.cur = c); save();
+  toast(`All accounts now counted in ${c}`, () => restore(snap));
+}
 const inCur = (t, cur) => { const a = accById(t.acc); return a && a.cur === cur; };
 
 function toast(msg, undo){   // optional Undo button, shown for 6 seconds
@@ -573,7 +718,13 @@ function ensureCats(){
   db.cats = DEFAULT_CATS.map(([type, name, emoji], i) => ({ id: 'c' + i + uid(), type, name, emoji, color: CAT_COLORS[i % CAT_COLORS.length], budget: 0 }));
   return true;
 }
-if (ensureCats()) store.set(KEY, JSON.stringify(db));
+function ensureData(){
+  let changed = ensureCats();
+  if (!Array.isArray(db.recurring)){ db.recurring = []; changed = true; }
+  if (!Array.isArray(db.favs)){ db.favs = []; changed = true; }
+  return changed;
+}
+if (ensureData()) store.set(KEY, JSON.stringify(db));
 
 /* ---------- Theme ---------- */
 const darkMQ = matchMedia('(prefers-color-scheme: dark)');
@@ -587,11 +738,11 @@ const onSystemTheme = () => { applyTheme(); if (typeof updateSide === 'function'
 darkMQ.addEventListener ? darkMQ.addEventListener('change', onSystemTheme) : darkMQ.addListener(onSystemTheme);
 
 /* ---------- Navigation ---------- */
-const PAGES = ['home','accounts','activity','reports','budgets','categories','backup','settings'];
-const TITLES = { home: 'My Accounts', accounts: 'Accounts', activity: 'Activity', reports: 'Reports', budgets: 'Budgets', categories: 'Categories', backup: 'Backup', settings: 'Settings' };
-let page = 'home', filter = '', catFilter = '', query = '', rMonth = thisMonth();
+const PAGES = ['home','accounts','activity','calendar','reports','budgets','loans','recurring','categories','backup','settings'];
+const TITLES = { home: 'My Accounts', accounts: 'Accounts', activity: 'Activity', calendar: 'Calendar', reports: 'Reports', budgets: 'Budgets', loans: 'Lent & borrowed', recurring: 'Recurring & favourites', categories: 'Categories', backup: 'Backup & export', settings: 'Settings' };
+let page = 'home', filter = '', catFilter = '', query = '', rMonth = thisMonth(), loanPerson = null, calDay = null;
 function go(p){
-  page = p;
+  page = p; loanPerson = null;
   $$('.nav[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === p));
   PAGES.forEach(x => $('#pg-' + x).hidden = x !== p);
   closeMenu();
@@ -620,6 +771,7 @@ function onBack(){
   const openDlg = $$('dialog').reverse().find(d => d.open);
   if (openDlg){ openDlg.close(); pushGuard(); return; }
   if (menuOpen()){ closeMenu(); pushGuard(); return; }
+  if (page === 'loans' && loanPerson){ loanPerson = null; render(); window.scrollTo(0, 0); pushGuard(); return; }
   if (page !== 'home'){ go('home'); pushGuard(); return; }
   if (Date.now() - lastBack < 2000){ leaving = true; history.back(); return; }   // second press: leave the app
   lastBack = Date.now();
@@ -646,7 +798,9 @@ function updateSide(){
   const cur = repCur(), spent = spentByCat(thisMonth(), cur);
   const over = db.cats.filter(c => c.type === 'out' && c.budget > 0 && (spent[c.id] || 0) > c.budget).length;
   $('#navBud').hidden = !over; $('#navBud').textContent = `${over} over`;
-  $('#navBk').textContent = !cfg.lastBackup ? 'Never' : daysSince(cfg.lastBackup) === 0 ? 'Today' : `${daysSince(cfg.lastBackup)} days ago`;
+  const openLoans = Object.values(loanPeople()).filter(p => p.bal).length;
+  $('#navLoan').textContent = openLoans ? `${openLoans} open` : '';
+  $('#navBk').textContent = !cfg.lastBackup ? 'Never' : daysSince(cfg.lastBackup) === 0 ? 'Today' : daysSince(cfg.lastBackup) === 1 ? 'Yesterday' : `${daysSince(cfg.lastBackup)} days ago`;
   $('#darkSw').checked = isDark();
   $('#sideVer').textContent = VERSION;
 }
@@ -656,11 +810,13 @@ function render(){
   $('#greet').hidden = page !== 'home';
   $('#title').textContent = TITLES[page];
   $('#topEye').innerHTML = hidden ? I.eyeoff : I.eye;
-  $('#topEye').hidden = ['settings', 'backup', 'categories'].includes(page) || (page === 'home' && db.accounts.length > 0);
+  $('#topEye').hidden = ['settings', 'backup', 'categories', 'recurring'].includes(page) || (page === 'home' && db.accounts.length > 0);
   $('#fab').hidden = ['settings', 'backup'].includes(page);
+  $('#fab').dataset.act = page === 'loans' ? 'addLoan' : 'add';
   updateSide();
-  ({ home: renderHome, accounts: renderAccounts, activity: renderActivity, reports: renderReports, budgets: renderBudgets,
-     categories: renderCategories, backup: renderBackup, settings: renderSettings })[page]();
+  ({ home: renderHome, accounts: renderAccounts, activity: renderActivity, calendar: renderCalendar, reports: renderReports, budgets: renderBudgets,
+     loans: renderLoans, recurring: renderRecurring, categories: renderCategories, backup: renderBackup, settings: renderSettings })[page]();
+  if (page === 'loans' && loanPerson) $('#title').textContent = loanPerson;
 }
 
 /* ---------- Rows ---------- */
@@ -673,7 +829,12 @@ function accRow(a, withEdit){
     ${withEdit ? `<button class="editbtn" data-edit-acc="${a.id}" aria-label="Edit ${esc(a.name)}">${I.edit}</button>` : ''}
   </div>`;
 }
+const LOAN = { lent: ['Lent to', 'out'], got: ['Got back from', 'in'], borrowed: ['Borrowed from', 'in'], repaid: ['Paid back to', 'out'] };
+const loanLabel = t => `${LOAN[t.loan][0]} ${t.person}`;
+const txLabel = t => { const c = catById(t.cat);
+  return t.loan ? loanLabel(t) : t.desc || (c ? c.name : t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer'); };
 function txIcon(t){
+  if (t.loan) return `<div class="tic" style="background:var(--soft)">🤝</div>`;
   const c = t.type !== 'tr' && catById(t.cat);
   return c ? `<div class="tic" style="background:${tint(c.color)}">${esc(c.emoji)}</div>` : `<div class="tic c-${t.type}">${I[t.type]}</div>`;
 }
@@ -683,8 +844,8 @@ function txRow(t, acc, run){
   let sign = t.type === 'in' ? '+' : t.type === 'out' ? '−' : '';
   if (t.type === 'tr' && acc) sign = effect(t, acc.id) > 0 ? '+' : '−';
   const where = t.type === 'tr' ? `${esc(from ? from.name : '?')} → ${esc(to ? to.name : '?')}` : esc(from ? from.name : '?');
-  const label = t.desc || (c ? c.name : t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer');
-  const sub = [t.desc && c ? esc(c.name) : '', acc && t.type !== 'tr' ? '' : where, acc ? '' : shortDate(t.date)].filter(Boolean).join(' · ');
+  const label = txLabel(t);
+  const sub = [t.loan && t.desc ? esc(t.desc) : '', t.rec ? '↻' : '', !t.loan && t.desc && c ? esc(c.name) : '', acc && t.type !== 'tr' ? '' : where, acc ? '' : shortDate(t.date)].filter(Boolean).join(' · ');
   const amount = hidden ? money(0, cur) : sign + fmt(t.amount, cur);
   return `<div class="li" data-tx="${t.id}">
     ${txIcon(t)}
@@ -696,7 +857,7 @@ function txRow(t, acc, run){
 /* ---------- Budgets (shared by Home and Reports) ---------- */
 function spentByCat(month, cur){
   const m = {};
-  db.txns.forEach(t => { if (t.type === 'out' && t.date.slice(0, 7) === month && inCur(t, cur)) m[t.cat || ''] = (m[t.cat || ''] || 0) + t.amount; });
+  db.txns.forEach(t => { if (t.type === 'out' && !t.loan && t.date.slice(0, 7) === month && inCur(t, cur)) m[t.cat || ''] = (m[t.cat || ''] || 0) + t.amount; });
   return m;
 }
 const budgetColor = p => p > 1 ? 'var(--out)' : p >= .75 ? 'var(--warn)' : 'var(--in)';
@@ -729,6 +890,7 @@ function renderHome(){
   let inM = 0, outM = 0;
   db.txns.forEach(t => {
     if (t.date.slice(0, 7) !== month || !inCur(t, main)) return;
+    if (t.loan) return;
     if (t.type === 'in') inM += t.amount; if (t.type === 'out') outM += t.amount;
   });
 
@@ -742,6 +904,10 @@ function renderHome(){
       else if (p >= .75) items.push({ page: 'budgets', icon: esc(c.emoji), bg: tint('#f59e0b'),
         title: `${esc(c.name)} at ${Math.round(p * 100)}%`, sub: `${money(c.budget - s, main)} left for ${daysLeft} day${daysLeft === 1 ? '' : 's'}` });
     });
+  const odd = oddAccs();
+  if (odd.length) items.unshift({ act: 'fixCur', icon: I.alert, bg: 'var(--outbg)',
+    title: `${esc(nameList(odd))} ${odd.length === 1 ? 'is' : 'are'} not counted in this month or budgets`,
+    sub: `${odd.length === 1 ? 'It uses' : 'They use'} ${esc([...new Set(odd.map(a => a.cur))].join(' / '))} instead of ${esc(main)}. Tap to fix.` });
   if (backupDue()) items.push({ page: 'backup', icon: I.save, bg: 'var(--soft)', title: 'Time for a backup',
     sub: cfg.lastBackup ? `Last backup ${daysSince(cfg.lastBackup)} days ago` : "You haven't backed up yet" });
 
@@ -764,18 +930,241 @@ function renderHome(){
       <button data-act="out"><b class="c-out">${I.out}</b>Expense</button>
       <button data-act="tr"><b class="c-tr">${I.tr}</b>Transfer</button>
     </div>
+    ${favsHTML()}
     <div class="card pad" style="margin-top:12px;cursor:pointer" data-page="reports">
       <div class="between"><b>${monthName(month, {month: 'long'})} so far</b><span class="sm">${daysLeft} day${daysLeft === 1 ? '' : 's'} left</span></div>
       ${flow}
       <div class="between" style="font-size:14px;font-weight:700"><span class="in">In ${money(inM, main)}</span><span class="out">Out ${money(outM, main)}</span></div>
       ${(inM || outM) && !hidden ? `<div class="sm" style="margin-top:4px">${net >= 0 ? `Saved ${fmt(net, main)} this month` : `Spent ${fmt(-net, main)} more than came in`}</div>` : ''}
     </div>
+    ${recapHTML(main)}
     ${items.length ? `<div class="sec">Needs attention</div>
-      <div class="card list">${items.map(x => `<div class="li" data-page="${x.page}"><div class="tic" style="background:${x.bg}">${x.icon}</div>
+      <div class="card list">${items.map(x => `<div class="li" ${x.act ? `data-act="${x.act}"` : `data-page="${x.page}"`}><div class="tic" style="background:${x.bg}">${x.icon}</div>
         <div class="li-main"><div class="nm" style="white-space:normal">${x.title}</div><div class="sm">${x.sub}</div></div><span class="sm">›</span></div>`).join('')}</div>`
       : `<div class="card allgood" style="margin-top:12px"><div class="tic c-in">${svg('<path d="M20 6 9 17l-5-5"/>')}</div><div><b>All good</b><div class="sm">No budgets over their limit.</div></div></div>`}
     <div class="sec">Last added <a data-page="activity">See all</a></div>
     ${last ? `<div class="card list">${txRow(last)}</div>` : `<div class="card empty">No transactions yet. Tap Income or Expense to add one.</div>`}`;
+}
+
+
+/* ---------- Favourites (one-tap add) ---------- */
+const typeName = t => t === 'in' ? 'Income' : t === 'out' ? 'Expense' : 'Transfer';
+const favName = f => { const c = catById(f.cat); return f.desc || (c ? c.name : typeName(f.type)); };
+const favEmoji = f => { const c = catById(f.cat); return c ? esc(c.emoji) : f.type === 'in' ? '↓' : f.type === 'out' ? '↑' : '⇄'; };
+function favsHTML(){
+  if (!db.favs.length) return '';
+  return `<div class="sec">Favourites <a data-page="recurring">Edit</a></div>
+    <div class="favs">${db.favs.map(f => { const a = accById(f.acc);
+      return `<button class="fav" data-act="fav" data-id="${f.id}"><span class="e">${favEmoji(f)}</span><span style="min-width:0;text-align:left"><div class="n">${esc(favName(f))}</div><div class="a">${money0(f.amount, a ? a.cur : repCur())}</div></span></button>`; }).join('')}</div>`;
+}
+function addFromFav(id){
+  const f = db.favs.find(x => x.id === id); if (!f) return;
+  if (!accById(f.acc) || (f.type === 'tr' && !accById(f.to))) return toast('That account no longer exists. Edit the favourite.');
+  const snap = snapshot();
+  db.txns.push({ id: uid(), ts: Date.now(), type: f.type, acc: f.acc, to: f.to || null, cat: f.cat || null, amount: f.amount, desc: f.desc || '', date: today() });
+  save();
+  toast(`Added ${favName(f)} · ${fmt0(f.amount, accById(f.acc).cur)}`, () => restore(snap));
+}
+
+/* ---------- Recurring ---------- */
+const pad2 = n => String(n).padStart(2, '0');
+const isoDate = x => `${x.getFullYear()}-${pad2(x.getMonth() + 1)}-${pad2(x.getDate())}`;
+function advance(d, freq, day){
+  const [y, m, dd] = d.split('-').map(Number);
+  if (freq === 'weekly') return isoDate(new Date(y, m - 1, dd + 7));
+  if (freq === 'yearly'){ const last = new Date(y + 1, m, 0).getDate(); return isoDate(new Date(y + 1, m - 1, Math.min(day || dd, last))); }
+  const last = new Date(y, m + 1, 0).getDate();   // monthly: same day next month, or the last day if shorter
+  return isoDate(new Date(y, m, Math.min(day || dd, last)));
+}
+// Adds any repeating transactions that are due (catches up if the app wasn't opened for a while)
+function runRecurring(){
+  let n = 0; const t0 = today();
+  db.recurring.forEach(r => {
+    if (r.paused) return;
+    if (!accById(r.acc) || (r.type === 'tr' && !accById(r.to))){ r.paused = true; return; }
+    let guard = 0;
+    while (r.next <= t0 && guard++ < 120){
+      db.txns.push({ id: uid(), ts: Date.now() + n, type: r.type, acc: r.acc, to: r.to || null, cat: r.cat || null, amount: r.amount, desc: r.desc || '', date: r.next, rec: r.id });
+      n++; r.next = advance(r.next, r.freq, r.day);
+    }
+  });
+  if (n) store.set(KEY, JSON.stringify(db));
+  return n;
+}
+const ord = n => n + (n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th');
+function freqText(r){
+  if (r.freq === 'weekly') return 'Every ' + new Date(r.next + 'T00:00').toLocaleDateString('en-GB', { weekday: 'long' });
+  if (r.freq === 'yearly') return 'Yearly on ' + new Date(r.next + 'T00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  return `Monthly on the ${ord(r.day || Number(r.next.slice(8)))}`;
+}
+function ruleRow(r, kind){
+  const a = accById(r.acc), cur = a ? a.cur : repCur();
+  const sign = r.type === 'in' ? '+' : r.type === 'out' ? '−' : '';
+  const sub = kind === 'rec'
+    ? `${r.paused ? '<b>Paused</b>' : `${freqText(r)} · next ${shortDate(r.next)}`} · ${esc(a ? a.name : '?')}`
+    : esc(a ? a.name : '?') + (r.type === 'tr' && accById(r.to) ? ' → ' + esc(accById(r.to).name) : '');
+  return `<div class="li" data-act="${kind === 'rec' ? 'rule' : 'editFav'}" data-id="${r.id}" ${r.paused ? 'style="opacity:.6"' : ''}>
+    ${txIcon({ type: r.type, cat: r.cat })}
+    <div class="li-main"><div class="nm">${esc(favName(r))}</div><div class="sm">${sub}</div></div>
+    <div class="amt ${hidden ? '' : r.type}">${hidden ? money(0, cur) : sign + fmt(r.amount, cur)}</div></div>`;
+}
+function renderRecurring(){
+  const cur = repCur(), horizon = isoDate(new Date(Date.now() + 30 * 864e5));
+  let outN = 0, inN = 0;
+  db.recurring.filter(r => !r.paused && accById(r.acc) && accById(r.acc).cur === cur).forEach(r => {
+    let d = r.next, g = 0;
+    while (d <= horizon && g++ < 60){ if (r.type === 'out') outN += r.amount; if (r.type === 'in') inN += r.amount; d = advance(d, r.freq, r.day); }
+  });
+  const recs = [...db.recurring].sort((a, b) => (a.paused - b.paused) || (a.next < b.next ? -1 : 1));
+  $('#pg-recurring').innerHTML = `
+    ${recs.length ? `<div class="tiles" style="margin-bottom:4px">
+      <div class="card tile"><div class="k">Coming in · next 30 days</div><div class="v in">${money(inN, cur)}</div></div>
+      <div class="card tile"><div class="k">Going out · next 30 days</div><div class="v out">${money(outN, cur)}</div></div></div>` : ''}
+    <div class="sec">Repeating <a data-act="addRec">+ Add</a></div>
+    ${recs.length ? `<div class="card list">${recs.map(r => ruleRow(r, 'rec')).join('')}</div>
+      <p class="sm" style="margin:8px 4px 0">Added automatically on their date when you open the app.</p>`
+      : `<div class="card empty">Nothing repeating yet.<br>Tap <b>+ Add</b>, or choose <b>Repeat</b> when adding a transaction, for things like rent, salary and bills.</div>`}
+    <div class="sec">Favourites</div>
+    ${db.favs.length ? `<div class="card list">${db.favs.map(f => ruleRow(f, 'fav')).join('')}</div>
+      <p class="sm" style="margin:8px 4px 0">Shown on the dashboard. One tap adds it with today's date.</p>`
+      : `<div class="card empty">No favourites yet.<br>Turn on <b>☆ Save as favourite</b> when adding a transaction, e.g. petrol or a weekly grocery shop. It then appears on the dashboard for one-tap adding.</div>`}`;
+}
+
+/* ---------- Monthly recap (first week of each month) ---------- */
+function recapHTML(cur){
+  if (Number(today().slice(8)) > 7) return '';
+  const pm = addMonth(thisMonth(), -1); if (cfg.recapSeen === pm) return '';
+  const flows = db.txns.filter(t => !t.loan && t.type !== 'tr' && t.date.slice(0, 7) === pm && inCur(t, cur));
+  if (!flows.length) return '';
+  const inc = flows.filter(t => t.type === 'in').reduce((a, t) => a + t.amount, 0);
+  const out = flows.filter(t => t.type === 'out').reduce((a, t) => a + t.amount, 0);
+  const net = inc - out, sp = spentByCat(pm, cur);
+  const topId = Object.keys(sp).sort((a, b) => sp[b] - sp[a])[0], top = catById(topId);
+  const prevOut = db.txns.filter(t => !t.loan && t.type === 'out' && t.date.slice(0, 7) === addMonth(pm, -1) && inCur(t, cur)).reduce((a, t) => a + t.amount, 0);
+  const change = prevOut ? Math.round((out - prevOut) / prevOut * 100) : null;
+  const name = monthName(pm, { month: 'long' }), prevName = monthName(addMonth(pm, -1), { month: 'long' });
+  return `<div class="card recap">
+    <button class="x" data-act="recapX" aria-label="Dismiss">×</button>
+    <div class="sm" style="font-weight:700;text-transform:uppercase;letter-spacing:.5px">${name} recap</div>
+    <div class="big ${net >= 0 ? 'in' : 'out'}">${net >= 0 ? 'Saved' : 'Overspent by'} ${money(Math.abs(net), cur)}</div>
+    <div class="rows">
+      <div><i>💰</i><span>In ${money(inc, cur)} · Out ${money(out, cur)}</span></div>
+      ${out && sp[topId] ? `<div><i>${top ? esc(top.emoji) : '❔'}</i><span>Biggest spend: <b>${top ? esc(top.name) : 'Uncategorised'}</b> ${money(sp[topId], cur)} (${Math.round(sp[topId] / out * 100)}%)</span></div>` : ''}
+      ${change !== null ? `<div><i>${change > 0 ? '📈' : '📉'}</i><span>Spending ${change > 0 ? 'up' : 'down'} <b>${Math.abs(change)}%</b> compared with ${prevName}</span></div>` : ''}
+      <div><i>🧾</i><span>${flows.length} transaction${flows.length === 1 ? '' : 's'}</span></div>
+    </div>
+    <a data-act="recapGo" style="display:inline-block;margin-top:12px;font-size:14px">See full report ›</a>
+  </div>`;
+}
+
+/* ---------- Calendar ---------- */
+function compact(m){
+  const v = Math.abs(m) / 100, f = (x, d) => x.toFixed(d).replace(/\.0$/, '');
+  return v >= 1e6 ? f(v / 1e6, v >= 1e7 ? 0 : 1) + 'm' : v >= 1000 ? f(v / 1000, v >= 1e4 ? 0 : 1) + 'k' : String(Math.round(v));
+}
+function renderCalendar(){
+  const cur = repCur(), m = rMonth, [y, mo] = m.split('-').map(Number);
+  const days = new Date(y, mo, 0).getDate(), offset = (new Date(y, mo - 1, 1).getDay() + 6) % 7, t0 = today();
+  const spend = {}, inc = {};
+  db.txns.forEach(t => {
+    if (t.date.slice(0, 7) !== m || t.loan || !inCur(t, cur)) return;
+    const d = Number(t.date.slice(8));
+    if (t.type === 'out') spend[d] = (spend[d] || 0) + t.amount;
+    if (t.type === 'in') inc[d] = (inc[d] || 0) + t.amount;
+  });
+  const max = Math.max(1, ...Object.values(spend)), total = Object.values(spend).reduce((a, b) => a + b, 0);
+  const elapsed = m === thisMonth() ? Number(t0.slice(8)) : m < thisMonth() ? days : 0;
+  if (!calDay || calDay.slice(0, 7) !== m) calDay = m === thisMonth() ? t0 : null;
+  let cells = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => `<div class="dow">${d}</div>`).join('') + '<div class="cday blank"></div>'.repeat(offset);
+  for (let d = 1; d <= days; d++){
+    const ds = `${m}-${pad2(d)}`, s = spend[d] || 0;
+    cells += `<div class="cday${ds === t0 ? ' today' : ''}${ds === calDay ? ' sel' : ''}${ds > t0 ? ' future' : ''}" data-act="day" data-day="${ds}">
+      ${s ? `<div class="heat" style="opacity:${(.07 + .38 * s / max).toFixed(2)}"></div>` : ''}${inc[d] ? '<i class="indot"></i>' : ''}
+      <span class="d">${d}</span><span class="s">${s && !hidden ? compact(s) : ''}</span></div>`;
+  }
+  let dayHTML = '';
+  if (calDay){
+    const list = db.txns.filter(t => t.date === calDay).sort((a, b) => b.ts - a.ts);
+    dayHTML = `<div class="sec">${niceDate(calDay)}${spend[Number(calDay.slice(8))] ? `<span class="sm out" style="font-weight:700">−${hidden ? '••••' : fmt(spend[Number(calDay.slice(8))], cur)}</span>` : ''}</div>
+      ${list.length ? `<div class="card list">${list.map(t => txRow(t)).join('')}</div>` : `<div class="card empty" style="padding:20px">Nothing on this day.</div>`}`;
+  }
+  $('#pg-calendar').innerHTML = curBanner() + mnav() + `
+    <div class="calsum"><span>Spent <b class="out">${money(total, cur)}</b></span>${elapsed ? `<span class="sm">Avg ${money0(Math.round(total / elapsed), cur)} a day</span>` : ''}</div>
+    <div class="cal">${cells}</div>
+    <div class="legend" style="justify-content:flex-start;margin:10px 4px 0"><span><i style="background:var(--out);opacity:.45"></i>Darker = more spent</span><span><i style="background:var(--in);border-radius:50%"></i>Money in</span></div>
+    ${dayHTML}`;
+}
+
+/* ---------- CSV export ---------- */
+function exportCSV(){
+  if (!db.txns.length) return toast('No transactions to export yet');
+  const q = v => { v = String(v ?? ''); return /[",\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; };
+  const KIND = { lent: 'Lent', got: 'Got back', borrowed: 'Borrowed', repaid: 'Paid back' };
+  const rows = [['Date', 'Type', 'Description', 'Category', 'Account', 'To account', 'Person', 'Amount', 'Currency', 'Repeating']];
+  [...db.txns].sort(byDate).forEach(t => {
+    const a = accById(t.acc), to = accById(t.to), c = catById(t.cat);
+    const signed = (t.type === 'out' ? -t.amount : t.amount) / 100;
+    rows.push([t.date, t.loan ? KIND[t.loan] : typeName(t.type), t.desc || '', c ? c.name : '', a ? a.name : '', to ? to.name : '',
+      t.person || '', signed.toFixed(2), a ? a.cur : '', t.rec ? 'Yes' : '']);
+  });
+  const blob = new Blob(['﻿' + rows.map(r => r.map(q).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const u = URL.createObjectURL(blob), el = document.createElement('a');
+  el.href = u; el.download = `transactions-${today()}.csv`;
+  document.body.appendChild(el); el.click(); el.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 2000);
+  toast(`Exported ${db.txns.length} transactions`);
+}
+
+/* ---------- Lent & borrowed ---------- */
+const personKey = n => String(n || '').trim().toLowerCase();
+function loanPeople(){   // balance > 0: they owe you · balance < 0: you owe them
+  const map = {};
+  db.txns.filter(t => t.loan).sort(byDate).forEach(t => {
+    const k = personKey(t.person), a = accById(t.acc);
+    const p = map[k] || (map[k] = { name: t.person, bal: 0, txns: [], cur: a ? a.cur : repCur() });
+    p.name = t.person; p.last = t.date; p.txns.push(t);
+    p.bal += (t.loan === 'lent' || t.loan === 'repaid') ? t.amount : -t.amount;
+  });
+  return map;
+}
+const personColor = n => COLORS[[...personKey(n)].reduce((a, ch) => a + ch.charCodeAt(0), 0) % COLORS.length];
+const avatar = n => `<div class="pp" style="background:${personColor(n)}">${esc((Array.from(n.trim())[0] || '?').toUpperCase())}</div>`;
+function renderLoans(){
+  const el = $('#pg-loans'), people = loanPeople();
+  if (loanPerson){
+    const p = people[personKey(loanPerson)];
+    if (!p){ loanPerson = null; return renderLoans(); }
+    const status = p.bal > 0 ? `<span class="in">Owes you ${money(p.bal, p.cur)}</span>` : p.bal < 0 ? `<span class="out">You owe ${money(-p.bal, p.cur)}</span>` : 'All settled ✓';
+    el.innerHTML = `
+      <div class="card pad" style="display:flex;align-items:center;gap:14px">${avatar(p.name)}
+        <div><div class="nm" style="font-size:17px">${esc(p.name)}</div><div style="font-weight:800;font-size:19px;margin-top:2px">${status}</div></div></div>
+      <div class="pbtns">
+        <button class="btn" data-act="addLoan" data-kind="got">↓ Got paid back</button>
+        <button class="btn" data-act="addLoan" data-kind="lent">↑ Lent more</button>
+        <button class="btn" data-act="addLoan" data-kind="repaid">↑ I paid back</button>
+        <button class="btn" data-act="addLoan" data-kind="borrowed">↓ I borrowed</button>
+      </div>
+      <div class="sec">History</div>
+      <div class="card list">${[...p.txns].reverse().map(t => txRow(t)).join('')}</div>`;
+    return;
+  }
+  const all = Object.values(people), open = all.filter(p => p.bal).sort((a, b) => Math.abs(b.bal) - Math.abs(a.bal)), settled = all.filter(p => !p.bal);
+  const cur = repCur(), owed = open.filter(p => p.bal > 0).reduce((a, p) => a + p.bal, 0), owe = open.filter(p => p.bal < 0).reduce((a, p) => a - p.bal, 0);
+  const row = p => `<div class="li" data-act="person" data-name="${esc(p.name)}">${avatar(p.name)}
+    <div class="li-main"><div class="nm">${esc(p.name)}</div><div class="sm">${p.bal > 0 ? 'Owes you' : p.bal < 0 ? 'You owe' : 'Settled'} · ${shortDate(p.last)}</div></div>
+    <div class="amt ${hidden || !p.bal ? '' : p.bal > 0 ? 'in' : 'out'}">${p.bal ? money(Math.abs(p.bal), p.cur) : ''}</div></div>`;
+  el.innerHTML = `
+    <div class="tiles">
+      <div class="card tile"><div class="k">Owed to you</div><div class="v in">${money(owed, cur)}</div></div>
+      <div class="card tile"><div class="k">You owe</div><div class="v out">${money(owe, cur)}</div></div>
+    </div>
+    <div class="pbtns">
+      <button class="btn primary" data-act="addLoan" data-kind="lent">+ I lent money</button>
+      <button class="btn" data-act="addLoan" data-kind="borrowed">+ I borrowed</button>
+    </div>
+    ${open.length ? `<div class="sec">Open</div><div class="card list">${open.map(row).join('')}</div>` : ''}
+    ${settled.length ? `<div class="sec">Settled</div><div class="card list">${settled.map(row).join('')}</div>` : ''}
+    ${all.length ? '' : `<div class="card empty" style="margin-top:12px">Keep track of money you lend to or borrow from people.<br>Each entry also updates the account the money went from or into, but it isn't counted as income or spending in reports and budgets.</div>`}`;
 }
 
 /* ---------- Accounts ---------- */
@@ -811,7 +1200,7 @@ function renderTxnList(){
   }
   const q = query.trim().toLowerCase();
   if (q) rows = rows.filter(t => (t.desc || '').toLowerCase().includes(q));
-  if (catFilter === 'none') rows = rows.filter(t => t.type !== 'tr' && !catById(t.cat));
+  if (catFilter === 'none') rows = rows.filter(t => t.type !== 'tr' && !t.loan && !catById(t.cat));
   else if (catFilter) rows = rows.filter(t => t.cat === catFilter);
   const narrowed = q || catFilter;
   rows.reverse();
@@ -888,15 +1277,15 @@ const mnav = () => `<div class="mnav">
   <b>${monthName(rMonth)}</b>
   <button class="iconbtn" data-act="mnext" aria-label="Next month" ${rMonth >= thisMonth() ? 'disabled' : ''}>${I.right}</button></div>`;
 const noData = `<div class="card empty">Add an account and some transactions to see this page.</div>`;
-function renderReports(){ $('#pg-reports').innerHTML = mnav() + (db.accounts.length ? overviewHTML() : noData); }
-function renderBudgets(){ $('#pg-budgets').innerHTML = mnav() + (db.accounts.length ? budgetsHTML() : noData); }
+function renderReports(){ $('#pg-reports').innerHTML = curBanner() + mnav() + (db.accounts.length ? overviewHTML() : noData); }
+function renderBudgets(){ $('#pg-budgets').innerHTML = curBanner() + mnav() + (db.accounts.length ? budgetsHTML() : noData); }
 function renderBackup(){
   $('#lastBackup').textContent = cfg.lastBackup ? `Last backup: ${niceDate(cfg.lastBackup)}` : 'No backup made yet';
 }
 
 function overviewHTML(){
   const cur = repCur(), month = rMonth;
-  const mtx = db.txns.filter(t => t.date.slice(0, 7) === month && inCur(t, cur));
+  const mtx = db.txns.filter(t => !t.loan && t.date.slice(0, 7) === month && inCur(t, cur));
   const inc = mtx.filter(t => t.type === 'in').reduce((s, t) => s + t.amount, 0);
   const out = mtx.filter(t => t.type === 'out').reduce((s, t) => s + t.amount, 0);
   const net = inc - out;
@@ -933,7 +1322,7 @@ function overviewHTML(){
   const months = [...Array(6)].map((_, i) => addMonth(month, i - 5));
   const bars = months.map(k => {
     let a = 0, b = 0;
-    db.txns.forEach(t => { if (t.date.slice(0, 7) === k && inCur(t, cur)){ if (t.type === 'in') a += t.amount; if (t.type === 'out') b += t.amount; } });
+    db.txns.forEach(t => { if (!t.loan && t.date.slice(0, 7) === k && inCur(t, cur)){ if (t.type === 'in') a += t.amount; if (t.type === 'out') b += t.amount; } });
     return { label: monthName(k, {month: 'short'}), inc: a, out: b, sel: k === month };
   });
   const curAccs = db.accounts.filter(a => a.cur === cur);
@@ -946,7 +1335,7 @@ function overviewHTML(){
       <div class="card tile"><div class="k">Money out</div><div class="v out">${money(out, cur)}</div></div>
       <div class="card tile net"><div class="k">${net >= 0 ? 'Saved' : 'Overspent'}</div><div class="v">${money(Math.abs(net), cur)}</div></div>
     </div>
-    ${multi ? `<p class="sm" style="margin:10px 4px 0">Reports include ${esc(cur)} accounts only.</p>` : ''}
+
     ${spendCard}
     ${incCard}
     <div class="card chart"><h3>Income vs expenses</h3><div class="sub">Last 6 months</div>
@@ -1038,7 +1427,10 @@ $('#importFile').onchange = async e => {
     if (!Array.isArray(d.accounts) || !Array.isArray(d.txns)) throw 0;
     if (!await ask({ title: 'Import this backup?', text: `Everything on this device will be replaced with the backup (${d.accounts.length} accounts, ${d.txns.length} transactions).`, yes: 'Replace', danger: true })) return;
     db = { accounts: d.accounts, txns: d.txns };
-    if (Array.isArray(d.cats)) db.cats = d.cats; else ensureCats();
+    if (Array.isArray(d.cats)) db.cats = d.cats;
+    if (Array.isArray(d.recurring)) db.recurring = d.recurring;
+    if (Array.isArray(d.favs)) db.favs = d.favs;
+    ensureData();
     save(); toast('Backup imported');
   } catch(_) { alert("That file isn't a valid backup."); }
 };
@@ -1046,7 +1438,7 @@ $('#wipeBtn').onclick = async () => {
   if (!await ask({ title: 'Erase all data?', text: 'All accounts, transactions and categories on this device will be deleted. Export a backup first if you might need them.', yes: 'Erase' })) return;
   if (!await ask({ title: 'Are you sure?', text: 'This removes everything from this device.', yes: 'Yes, erase all' })) return;
   const snap = snapshot();
-  db = { accounts: [], txns: [] }; ensureCats(); save(); toast('All data erased', () => restore(snap));
+  db = { accounts: [], txns: [] }; ensureData(); save(); toast('All data erased', () => restore(snap));
 };
 
 /* ---------- Transaction dialog ---------- */
@@ -1082,8 +1474,10 @@ $('#fDesc').addEventListener('change', () => {
   if (prev && catById(prev.cat)){ selCat = prev.cat; renderChips(); }
 });
 
-function openTxn(id, type){
+function openTxn(id, type, repeat){
   if (!db.accounts.length){ openAcc(); return; }
+  const pre = id && db.txns.find(t => t.id === id);
+  if (pre && pre.loan) return openLoan(id);
   editing = id ? db.txns.find(t => t.id === id) : null;
   $('#fAcc').innerHTML = accOptions(); $('#fTo').innerHTML = accOptions();
   $('#descList').innerHTML = [...new Set(db.txns.map(t => t.desc).filter(Boolean))].slice(-200).map(d => `<option value="${esc(d)}">`).join('');
@@ -1096,6 +1490,9 @@ function openTxn(id, type){
     $('#fAmt').value = (editing.amount / 100).toFixed(2);
     $('#fDesc').value = editing.desc; $('#fDate').value = editing.date;
     $('#txnDel').hidden = false;
+    $('#repWrap').hidden = true;
+    $('#recNote').hidden = !editing.rec;
+    $('#recNote').textContent = '↻ Added by a repeating rule. To change future ones, go to Recurring & favourites.';
   } else {
     $('#txnTitle').textContent = 'New transaction';
     selCat = null;
@@ -1104,7 +1501,10 @@ function openTxn(id, type){
     $('#fTo').value = (db.accounts.find(a => a.id !== $('#fAcc').value) || db.accounts[0]).id;
     $('#fAmt').value = ''; $('#fDesc').value = ''; $('#fDate').value = today();
     $('#txnDel').hidden = true;
+    $('#repWrap').hidden = false; $('#recNote').hidden = true;
+    $('#fRepeat').value = repeat || '';
   }
+  $('#fFav').checked = false;
   dT.showModal();
 }
 function saveTxn(){
@@ -1118,16 +1518,28 @@ function saveTxn(){
     if (accById(acc).cur !== accById(to).cur) return err('These accounts use different currencies. Record an expense in one and income in the other instead.');
   }
   const t = { type, acc, to: type === 'tr' ? to : null, cat: type === 'tr' ? null : selCat, amount, desc, date };
-  const wasEditing = !!editing;
+  const wasEditing = !!editing, repeat = !editing && $('#fRepeat').value;
   if (editing) Object.assign(editing, t);
-  else db.txns.push({ id: uid(), ts: Date.now(), ...t });
-  dT.close(); save(); toast(wasEditing ? 'Transaction updated' : 'Transaction added');
+  else {
+    const nt = { id: uid(), ts: Date.now(), ...t };
+    if (repeat){
+      const day = Number(date.slice(8));
+      const r = { id: uid(), type, acc, to: t.to, cat: t.cat, amount, desc, freq: repeat, day, next: advance(date, repeat, day) };
+      db.recurring.push(r); nt.rec = r.id;
+    }
+    db.txns.push(nt);
+  }
+  if ($('#fFav').checked && !db.favs.some(f => f.type === type && f.acc === acc && f.to === t.to && f.cat === t.cat && f.amount === amount && (f.desc || '') === desc))
+    db.favs.push({ id: uid(), type, acc, to: t.to, cat: t.cat, amount, desc });
+  const caught = repeat ? runRecurring() : 0;
+  dT.close(); save();
+  toast(wasEditing ? 'Transaction updated' : repeat ? `Added · repeats ${$('#fRepeat').selectedOptions[0].text.toLowerCase()}${caught ? ` (+${caught} past)` : ''}` : $('#fFav').checked ? 'Added and saved as favourite' : 'Transaction added');
 }
 $('#txnSave').onclick = saveTxn;
 $('#txnDel').onclick = async () => {
   const t = editing; if (!t) return;
   const a = accById(t.acc), to = accById(t.to), c = catById(t.cat);
-  const label = t.desc || (c ? c.name : t.type === 'in' ? 'Income' : t.type === 'out' ? 'Expense' : 'Transfer');
+  const label = txLabel(t);
   const where = t.type === 'tr' ? `${esc(a ? a.name : '?')} → ${esc(to ? to.name : '?')}` : esc(a ? a.name : '?');
   const sign = t.type === 'in' ? '+' : t.type === 'out' ? '−' : '';
   const box = `${txIcon(t)}<div class="li-main"><div class="nm">${esc(label)}</div><div class="sm">${where} · ${niceDate(t.date)}</div></div>
@@ -1136,6 +1548,97 @@ $('#txnDel').onclick = async () => {
   const snap = snapshot();
   db.txns = db.txns.filter(x => x !== t); dT.close(); save();
   toast('Transaction deleted', () => restore(snap));
+};
+
+
+/* ---------- Lent & borrowed dialog ---------- */
+const dL = $('#dlgLoan');
+let editingLoan = null;
+const lKind = () => dL.querySelector('input[name=ltype]:checked').value;
+function syncLoan(){
+  const k = lKind();
+  $('#lAccLbl').textContent = k === 'lent' || k === 'repaid' ? 'From account' : 'Into account';
+  $('#lHint').textContent = { lent: 'You gave money to someone. They owe you.', got: 'Someone returned money you lent them.',
+    borrowed: 'Someone gave you money. You owe them.', repaid: 'You returned money you borrowed.' }[k];
+}
+dL.querySelectorAll('input[name=ltype]').forEach(r => r.onchange = syncLoan);
+function openLoan(id, kind, person){
+  if (!db.accounts.length){ openAcc(); return; }
+  const t = editingLoan = id ? db.txns.find(x => x.id === id) : null;
+  $('#lAcc').innerHTML = accOptions();
+  $('#peopleList').innerHTML = Object.values(loanPeople()).map(p => `<option value="${esc(p.name)}">`).join('');
+  dL.querySelector(`input[name=ltype][value="${t ? t.loan : kind || 'lent'}"]`).checked = true;
+  $('#lPerson').value = t ? t.person : (person || '');
+  $('#lAmt').value = t ? (t.amount / 100).toFixed(2) : '';
+  $('#lAcc').value = t ? t.acc : db.accounts[0].id;
+  $('#lNote').value = t ? t.desc || '' : '';
+  $('#lDate').value = t ? t.date : today();
+  $('#loanTitle').textContent = t ? 'Edit entry' : 'Lent & borrowed';
+  $('#loanDel').hidden = !t; $('#loanErr').textContent = '';
+  syncLoan(); dL.showModal();
+}
+function saveLoan(){
+  const err = m => { $('#loanErr').textContent = m; };
+  const kind = lKind(), person = $('#lPerson').value.trim(), amount = minor($('#lAmt').value);
+  const acc = $('#lAcc').value, desc = $('#lNote').value.trim(), date = $('#lDate').value;
+  if (!person) return err('Enter who this is with.');
+  if (!(amount > 0)) return err('Enter an amount above 0.');
+  if (!date) return err('Pick a date.');
+  const same = Object.values(loanPeople()).find(p => personKey(p.name) === personKey(person));   // keep one spelling per person
+  const t = { type: LOAN[kind][1], loan: kind, person: same ? same.name : person, acc, to: null, cat: null, amount, desc, date };
+  const was = !!editingLoan;
+  if (editingLoan) Object.assign(editingLoan, t); else db.txns.push({ id: uid(), ts: Date.now(), ...t });
+  dL.close(); save(); toast(was ? 'Entry updated' : `Saved: ${loanLabel(t)}`);
+}
+$('#loanSave').onclick = saveLoan;
+$('#loanDel').onclick = async () => {
+  const t = editingLoan; if (!t) return;
+  const a = accById(t.acc);
+  if (!await ask({ title: 'Delete this entry?', text: `${t.person}'s balance and your ${a ? a.name : ''} balance will be updated.`,
+    box: `${txIcon(t)}<div class="li-main"><div class="nm">${esc(loanLabel(t))}</div><div class="sm">${niceDate(t.date)}</div></div><div class="amt">${fmt(t.amount, a ? a.cur : '')}</div>` })) return;
+  const snap = snapshot(); db.txns = db.txns.filter(x => x !== t); dL.close(); save(); toast('Entry deleted', () => restore(snap));
+};
+
+/* ---------- Recurring rule / favourite dialog ---------- */
+const dR = $('#dlgRule');
+let editingRule = null, ruleKind = 'rec';
+function openRule(kind, id){
+  ruleKind = kind;
+  const r = editingRule = (kind === 'rec' ? db.recurring : db.favs).find(x => x.id === id); if (!r) return;
+  const c = catById(r.cat);
+  $('#ruleTitle').textContent = kind === 'rec' ? 'Repeating transaction' : 'Favourite';
+  $('#ruleSub').textContent = typeName(r.type) + (c ? ` · ${c.emoji} ${c.name}` : '');
+  $('#rDesc').value = r.desc || ''; $('#rAmt').value = (r.amount / 100).toFixed(2);
+  $('#rAcc').innerHTML = accOptions(); $('#rAcc').value = r.acc;
+  $('#rRecOnly').hidden = kind !== 'rec';
+  if (kind === 'rec'){ $('#rFreq').value = r.freq; $('#rNext').value = r.next; $('#rPaused').checked = !!r.paused; }
+  $('#ruleDel').textContent = kind === 'rec' ? 'Stop repeating' : 'Remove favourite';
+  $('#ruleErr').textContent = '';
+  dR.showModal();
+}
+function saveRule(){
+  const err = m => { $('#ruleErr').textContent = m; };
+  const r = editingRule; if (!r) return;
+  const amount = minor($('#rAmt').value), acc = $('#rAcc').value;
+  if (!(amount > 0)) return err('Enter an amount above 0.');
+  if (r.type === 'tr' && acc === r.to) return err("The 'from' account can't be the same as the 'to' account.");
+  Object.assign(r, { desc: $('#rDesc').value.trim(), amount, acc });
+  let added = 0;
+  if (ruleKind === 'rec'){
+    const next = $('#rNext').value; if (!next) return err('Pick the next date.');
+    Object.assign(r, { freq: $('#rFreq').value, next, day: Number(next.slice(8)), paused: $('#rPaused').checked });
+    added = runRecurring();
+  }
+  dR.close(); save(); toast(added ? `Saved · ${added} due transaction${added === 1 ? '' : 's'} added` : 'Saved');
+}
+$('#ruleSave').onclick = saveRule;
+$('#ruleDel').onclick = async () => {
+  const r = editingRule; if (!r) return;
+  const rec = ruleKind === 'rec';
+  if (!await ask({ title: rec ? 'Stop repeating?' : 'Remove favourite?', text: rec ? 'No more transactions will be added. Ones already added are kept.' : 'Transactions you already added are kept.', yes: rec ? 'Stop repeating' : 'Remove' })) return;
+  const snap = snapshot();
+  if (rec) db.recurring = db.recurring.filter(x => x !== r); else db.favs = db.favs.filter(x => x !== r);
+  dR.close(); save(); toast(rec ? 'Stopped repeating' : 'Favourite removed', () => restore(snap));
 };
 
 /* ---------- Account dialog ---------- */
@@ -1240,7 +1743,7 @@ $('#catDel').onclick = async () => {
 };
 
 $$('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());
-[[dT, saveTxn], [dA, saveAcc], [dC, saveCat]].forEach(([d, fn]) =>
+[[dT, saveTxn], [dA, saveAcc], [dC, saveCat], [dL, saveLoan], [dR, saveRule]].forEach(([d, fn]) =>
   d.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); fn(); } }));
 
 /* ---------- One click handler for the whole app ---------- */
@@ -1261,6 +1764,17 @@ document.addEventListener('click', e => {
     case 'add': openTxn(); break;
     case 'in': case 'out': case 'tr': openTxn(null, d.act); break;
     case 'export': exportBackup(); break;
+    case 'fixCur': fixCurrency(); break;
+    case 'addLoan': openLoan(null, d.kind || 'lent', page === 'loans' && loanPerson ? loanPerson : ''); break;
+    case 'person': loanPerson = d.name; render(); window.scrollTo(0, 0); break;
+    case 'fav': addFromFav(d.id); break;
+    case 'editFav': openRule('fav', d.id); break;
+    case 'rule': openRule('rec', d.id); break;
+    case 'addRec': openTxn(null, 'out', 'monthly'); break;
+    case 'csv': exportCSV(); break;
+    case 'recapX': cfg.recapSeen = addMonth(thisMonth(), -1); saveCfg(); render(); break;
+    case 'recapGo': rMonth = addMonth(thisMonth(), -1); go('reports'); break;
+    case 'day': calDay = d.day; renderCalendar(); break;
     case 'menu': openMenu(); break;
     case 'closeMenu': closeMenu(); break;
     case 'mprev': rMonth = addMonth(rMonth, -1); render(); break;
@@ -1270,6 +1784,12 @@ document.addEventListener('click', e => {
 
 /* ---------- Start ---------- */
 applyTheme();
+const recAdded = runRecurring();
+if (recAdded) setTimeout(() => toast(`Added ${recAdded} repeating transaction${recAdded === 1 ? '' : 's'}`), session ? 300 : 1500);
+document.addEventListener('visibilitychange', () => {   // app reopened on a later day
+  if (document.hidden) return;
+  const n = runRecurring(); if (n){ render(); toast(`Added ${n} repeating transaction${n === 1 ? '' : 's'}`); }
+});
 go(session && PAGES.includes(session.page) ? session.page : 'home');
 // Set up the back-button guard once; a refresh keeps the existing one instead of stacking more
 const hs = history.state || {};
